@@ -3,7 +3,7 @@ body{
     margin: 0;
 }
 
-#country-info {
+/* #country-info {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
@@ -12,5 +12,14 @@ body{
     pointer-events: none;
     display: none;
     z-index: 1000;
+  } */
+
+  .country-label{
+    font-size: 1px;
+    color: black;
+    background-color: white;
+    padding: 2px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    pointer-events: none;
   }
-  

@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import styles from './Globus.module.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; // Importujemy CSS2DRenderer
 
 import { createEarth } from './helpers/earth';
 import { createSkyBox } from './helpers/skyBox';
 import { addLights } from './helpers/lights';
 import { addCountryBorders } from './helpers/countries';
-import { ShowCountryInfo, hideCountryInfo } from './helpers/tooltip';
 
 
 import countriesData from './countries.geo.json';
+import * as turf from '@turf/turf';
 
 
 
@@ -33,40 +34,65 @@ class Globus extends Component {
     this.mount.appendChild(this.renderer.domElement);
     this.camera.position.z = 20;
 
+    this.labelRenderer = new CSS2DRenderer();
+    this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    this.labelRenderer.domElement.style.position = 'absolute';
+    this.labelRenderer.domElement.style.top = '0px';
+    this.mount.appendChild(this.labelRenderer.domElement);
+
     this.earthSphere = createEarth();
     this.scene.add(this.earthSphere);
     this.scene.background = createSkyBox();
     addLights(this.scene);
     addCountryBorders(this.earthSphere, countriesData);
+
+    this.loadGeoJsonData(countriesData);
   }
 
   addListeners = () => {
     window.addEventListener('resize', this.handleWindowResize);
-    window.addEventListener('mousemove', this.handleMouseMove);
   }
 
-  handleMouseMove = (event) => {
-    const mouse = new THREE.Vector2();
+  addCountryLabels = (feature) => {
+    if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+      try{
+        const centroid = turf.centroid(feature);
 
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        const [longitude, latitude] = centroid.geometry.coordinates;
+        if (typeof longitude !== 'number' || typeof latitude !== 'number') {
+          console.warn('Nieprawidłowe współrzędne dla kraju:', feature.properties.name);
+          return;
+        }
 
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
+        const radius = 10;
+        const phi = (90 - latitude) * (Math.PI / 180);
+        const theta = ( longitude + 180 ) * (Math.PI / 180 );
+        
+        const x = -radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.cos(phi);
+        const z = radius * Math.sin(phi) * Math.sin(theta);
 
-    const intersects = raycaster.intersectObjects(this.earthSphere.children);
+        const countryLabelDiv = document.createElement('div');
+        countryLabelDiv.className = styles.countryLabel;
+        countryLabelDiv.textContent = feature.properties.name;
 
-    if (intersects.length > 0) {
-      const countryName = intersects[0].object.userData.name || 'Unknown Country';
-      ShowCountryInfo(countryName, event.clientX, event.clientY); // Wywołanie metody do wyświetlenia informacji
-    } else {
-      hideCountryInfo(); // Ukrycie tooltipa, gdy nie ma przecięć
+        const countryLabel = new CSS2DObject(countryLabelDiv);
+        countryLabel.position.set(x, y, z);
+
+        this.earthSphere.add(countryLabel);
+      } catch (error){
+        console.error('Błąd przy obliczaniu centroidu dla kraju:', feature.properties.name, error);
+      }
+      } else {
+        console.warn('Pomijanie kraju o nieobsługiwanym typie geometrii:', feature.properties.name, feature.geometry.type);
+      }
     }
-  }
+  
 
   handleWindowResize = () => {
     const { innerWidth, innerHeight } = window;
     this.renderer.setSize(innerWidth, innerHeight);
+    this.labelRenderer.setSize(innerWidth, innerHeight);
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
   }
@@ -75,6 +101,13 @@ class Globus extends Component {
     requestAnimationFrame(this.startAnimation);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
+  }
+
+  loadGeoJsonData = (geoJsonData) => {
+    geoJsonData.features.forEach((feature) => {
+      this.addCountryLabels(feature);
+    });
   }
 
   render() {
