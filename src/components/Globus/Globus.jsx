@@ -36,8 +36,7 @@ class Globus extends Component {
 
     this.labelRenderer = new CSS2DRenderer();
     this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    this.labelRenderer.domElement.style.position = 'absolute';
-    this.labelRenderer.domElement.style.top = '0px';
+    this.labelRenderer.domElement.className = styles.labelRenderer;
     this.mount.appendChild(this.labelRenderer.domElement);
 
     this.earthSphere = createEarth();
@@ -56,6 +55,11 @@ class Globus extends Component {
   addCountryLabels = (feature) => {
     if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
       try{
+
+        if (!feature.geometry.coordinates || feature.geometry.coordinates.length === 0) {
+          console.warn('Pusta geometria dla kraju: ', feature.properties.name);
+          return;
+        }
         const centroid = turf.centroid(feature);
 
         const [longitude, latitude] = centroid.geometry.coordinates;
@@ -79,6 +83,9 @@ class Globus extends Component {
         const countryLabel = new CSS2DObject(countryLabelDiv);
         countryLabel.position.set(x, y, z);
 
+        this.scene.add(countryLabel);
+
+
         this.earthSphere.add(countryLabel);
       } catch (error){
         console.error('Błąd przy obliczaniu centroidu dla kraju:', feature.properties.name, error);
@@ -86,7 +93,7 @@ class Globus extends Component {
       } else {
         console.warn('Pomijanie kraju o nieobsługiwanym typie geometrii:', feature.properties.name, feature.geometry.type);
       }
-    }
+    };
   
 
   handleWindowResize = () => {
@@ -102,6 +109,32 @@ class Globus extends Component {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
+
+    // Sprawdzanie widoczności etykiet w każdej klatce
+    this.earthSphere.children.forEach((child) => {
+      if (child instanceof CSS2DObject) {
+        const labelDiv = child.element;
+        const labelPosition = child.position.clone();
+        const globeCenter = new THREE.Vector3(0, 0, 0);
+
+        const labelVector = labelPosition.clone().sub(globeCenter).normalize();
+        const cameraVector = this.camera.position.clone().sub(globeCenter).normalize();
+
+        const dotProduct = labelVector.dot(cameraVector);
+
+        if (dotProduct > 0) {
+          const screenPosition = labelPosition.project(this.camera);
+
+          if (screenPosition.x < -0.3 || screenPosition.x > 0.3 || screenPosition.y < -0.4 || screenPosition.y > 0.4) {
+            labelDiv.style.display = 'none';
+        } else {
+          labelDiv.style.display = 'block';
+        }
+      } else {
+        labelDiv.style.display = 'none';
+      }
+      }
+    });
   }
 
   loadGeoJsonData = (geoJsonData) => {

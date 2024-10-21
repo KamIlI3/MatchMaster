@@ -1,0 +1,9 @@
+.labelRenderer{
+    position: absolute;
+    top: 0px;
+    color: black;
+  }
+
+  .labelRenderer:hover{
+    cursor: pointer;
+  }
