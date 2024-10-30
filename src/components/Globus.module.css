@@ -1,0 +1,138 @@
+.labelRenderer{
+    position: absolute;
+    top: 0px;
+    color: black;
+    font-size: 60%;
+  }
+  .globusContainer {
+    position: relative;
+    width: 100%;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .contentWrapper {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .leaguesList {
+    width: 250px; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    color: white;
+    padding: 10px;
+    overflow: hidden;
+    top: 15%;
+    left: 25%;
+    border-radius: 15px;
+    max-height: 70vh; 
+    position: absolute;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .leaguesList li{
+    border: 1px solid black;
+    height: 50px;
+    width: 170px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-left: 5px;
+    background-color:  rgba(197, 196, 196, 0.4); ;
+  }
+
+  .leaguesList li:hover{
+    cursor: pointer;
+  }
+  
+  .leaguesList {
+    scrollbar-color: rgba(0, 0, 0, 0.4) rgba(197, 196, 196, 0.4);
+    scrollbar-width: thin;   
+  }
+  .leaguesList1 {
+    width: 250px; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    color: white;
+    padding: 10px;
+    overflow: hidden;
+    top: 15%;
+    right: 25%;
+    border-radius: 15px;
+    max-height: 70vh; 
+    position: absolute;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .leaguesList1 li{
+    border: 1px solid black;
+    height: 50px;
+    width: 170px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-left: 5px;
+    background-color:  rgba(197, 196, 196, 0.4); ;
+  }
+
+  .leaguesList1 li:hover{
+    cursor: pointer;
+  }
+  
+  .leaguesList1 {
+    scrollbar-color: rgba(0, 0, 0, 0.4) rgba(197, 196, 196, 0.4);
+    scrollbar-width: thin;   
+  }
+
+  .Menu{
+    width: 100%; 
+    background-color: none; 
+    padding: 10px;
+    max-height: 20vh; 
+    position: absolute;
+    z-index: 1000;
+  }
+
+  .NavMenu{
+    width: 100%;
+    display: flex;
+    position: relative;
+    justify-content: center;
+  }
+
+  .NavLinks{
+    color: aliceblue;
+    font-size: 200%;
+    text-decoration: none;
+    padding: 20px;
+    align-self: center;
+  }
+
+  .ModeSwitch{
+    position: absolute;
+    top: 85%;
+    width: 250px;
+    left: 44.5%;
+  }
+  .ModeButton{
+    width: 100px;
+    height: 25px;
+    border-radius: 50px;
+    border: none;
+  }
+
+  #DarkModeButton{
+    background-color: black;
+    color: white;
+  }
+

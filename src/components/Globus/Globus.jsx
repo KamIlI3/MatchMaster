@@ -1,38 +1,45 @@
 import React, { Component } from 'react';
-import styles from './Globus.module.css';
+import styles from '../Globus.module.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; // Importujemy CSS2DRenderer
 
+import { Link } from 'react-router-dom';
 import { createEarth } from './helpers/earth';
 import { createSkyBox } from './helpers/skyBox';
 import { addLights } from './helpers/lights';
 import { addCountryBorders } from './helpers/countries';
 
 
-import countriesData from './countries.geo.json';
+import countriesData from '../countries.geo.json';
 import * as turf from '@turf/turf';
 
-
+import { fetchTopLeagues } from '../api/fetchLeagues';
 
 class Globus extends Component {
+
+  state = {
+    leagues: [],
+    error: null,
+  };
 
   componentDidMount() {
     this.initScene();
     this.addListeners();
     this.startAnimation();
+    this.loadLeagues();
   }
 
   initScene = () => {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     this.controls = new OrbitControls(this.camera, this.mount);
-    this.controls.enableZoom = false;
+    this.controls.enableZoom = true;
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.mount.appendChild(this.renderer.domElement);
-    this.camera.position.z = 20;
+    this.camera.position.z = 40;
 
     this.labelRenderer = new CSS2DRenderer();
     this.labelRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,10 +95,19 @@ class Globus extends Component {
 
         this.earthSphere.add(countryLabel);
       } catch (error){
-        console.error('Błąd przy obliczaniu centroidu dla kraju:', feature.properties.name, error);
+        // console.error('Błąd przy obliczaniu centroidu dla kraju:', feature.properties.name, error);
       }
       } else {
         console.warn('Pomijanie kraju o nieobsługiwanym typie geometrii:', feature.properties.name, feature.geometry.type);
+      }
+    };
+
+    loadLeagues = async () => {
+      try {
+        const leagues = await fetchTopLeagues(); // Użycie funkcji z API
+        this.setState({ leagues });
+      } catch (error) {
+        this.setState({ error: 'Error fetching leagues' });
       }
     };
   
@@ -110,7 +126,6 @@ class Globus extends Component {
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
 
-    // Sprawdzanie widoczności etykiet w każdej klatce
     this.earthSphere.children.forEach((child) => {
       if (child instanceof CSS2DObject) {
         const labelDiv = child.element;
@@ -125,7 +140,7 @@ class Globus extends Component {
         if (dotProduct > 0) {
           const screenPosition = labelPosition.project(this.camera);
 
-          if (screenPosition.x < -0.3 || screenPosition.x > 0.3 || screenPosition.y < -0.4 || screenPosition.y > 0.4) {
+          if (screenPosition.x < -0.1 || screenPosition.x > 0.1 || screenPosition.y < -0.2 || screenPosition.y > 0.2) {
             labelDiv.style.display = 'none';
         } else {
           labelDiv.style.display = 'block';
@@ -144,8 +159,63 @@ class Globus extends Component {
   }
 
   render() {
+
+    const { leagues, error } = this.state;
+
     return (
-      <div ref={ref => (this.mount = ref)}></div>
+      <div className={styles.globusContainer}>
+        <div className={styles.contentWrapper}>
+          <div className={styles.Menu}>
+          <nav className={styles.Menu}>
+            <Link to="/">Start</Link>
+            <Link to="/leagues">Leagues</Link>
+            <Link to="/teams">Teams</Link>
+            <Link to="/international">International</Link>
+            <Link to="/live">Live</Link>
+          </nav>
+          </div>
+          <div className={styles.leaguesList}>
+            {error && <p>{error}</p>}
+            <h2>Leagues</h2>
+            <ul>
+               {leagues.length > 0 ? (
+                leagues.map((league) => (
+                  <li key={league.name}>
+                    <img src={league.logo} alt={`${league.name} logo`} style={{ borderRadius:'5px', width: '40px', height: '40px', marginRight: '8px' }} />
+                    {league.name}
+                  </li>
+                ))
+              ) : (
+                <p>No leagues available</p> // Możesz dodać styl lub dodatkowy komunikat tutaj
+              )}
+            </ul>
+          </div>
+
+
+          <div className={styles.leaguesList1}>
+            {error && <p>{error}</p>}
+            <h2>Leagues</h2>
+            <ul>
+               {leagues.length > 0 ? (
+                leagues.map((league) => (
+                  <li key={league.name}>
+                    <img src={league.logo} alt={`${league.name} logo`} style={{ borderRadius:'5px', width: '40px', height: '40px', marginRight: '8px' }} />
+                    {league.name}
+                  </li>
+                ))
+              ) : (
+                <p>No leagues available</p> // Możesz dodać styl lub dodatkowy komunikat tutaj
+              )}
+            </ul>
+          </div>
+
+          <div className={styles.globeWrapper} ref={ref => (this.mount = ref)} />
+          <div className={styles.ModeSwitch}>
+            <button className={styles.ModeButton} id={styles.DarkModeButton}>Dark</button>
+            <button className={styles.ModeButton} id={styles.LightModeButton}>Light</button>
+          </div>
+        </div>
+      </div>
     );
   }
 }
