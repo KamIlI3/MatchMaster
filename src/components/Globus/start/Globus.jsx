@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
-import styles from '../Globus.module.css';
+import styles from '../../css/Globus.module.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; // Importujemy CSS2DRenderer
 
-import { Link } from 'react-router-dom';
-import { createEarth } from './helpers/earth';
-import { createSkyBox } from './helpers/skyBox';
-import { addLights } from './helpers/lights';
-import { addCountryBorders } from './helpers/countries';
+import { createEarth } from '../helpers/earth';
+import { createSkyBox } from '../helpers/skyBox';
+import { addLights } from '../helpers/lights';
+import { addCountryBorders } from '../helpers/countries';
 
 
-import countriesData from '../countries.geo.json';
+import countriesData from '../../countries.geo.json';
 import * as turf from '@turf/turf';
 
-import { fetchTopLeagues } from '../api/fetchLeagues';
+import { fetchTopLeagues } from '../../api/fetchLeagues';
 
 class Globus extends Component {
 
@@ -165,15 +164,7 @@ class Globus extends Component {
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
-          <div className={styles.Menu}>
-          <nav className={styles.Menu}>
-            <Link to="/">Start</Link>
-            <Link to="/leagues">Leagues</Link>
-            <Link to="/teams">Teams</Link>
-            <Link to="/international">International</Link>
-            <Link to="/live">Live</Link>
-          </nav>
-          </div>
+            
           <div className={styles.leaguesList}>
             {error && <p>{error}</p>}
             <h2>Leagues</h2>

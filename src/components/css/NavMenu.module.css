@@ -1,0 +1,142 @@
+.NavMenu {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    background-color: transparent;
+    margin: 2% 0 0 0;
+    padding: 0;
+    width: 100%;
+    height: 10vh;
+    background-color: transparent;
+  }
+  .Menu{
+    position: relative;
+    width: 70%;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 180%;
+    font-family: cursive;
+    padding-left: 10%;
+    padding-right: 20%;
+  }
+ .NavigationLink {
+  color: aliceblue;
+  text-decoration: none;
+  font-weight: 600;
+  }
+  .NavigationLink:hover,
+  .ActiveLink {
+    color: rgb(81, 190, 218);
+    box-shadow: 0px 2px rgb(81, 190, 218);
+  }
+
+  .searchSettings {
+    background-color: transparent;
+    width: 30%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  button{
+  border: solid 1px aliceblue;
+  border-radius: 15px;
+  height: 35px;
+  margin: 2%;
+  }
+  button:hover{
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: rgb(81, 190, 218);
+  }
+
+  @media (max-width: 1200px) {
+    .Menu{
+      position: relative;
+      width: 70%;
+      height: 100%;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 180%;
+      font-family: cursive;
+      padding-left: 5%;
+      padding-right: 10%;
+    }
+   .NavigationLink {
+    color: aliceblue;
+    text-decoration: none;
+    font-weight: 600;
+    }
+  }
+  @media (max-width: 950px) {
+    .Menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 150px;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      transform: translateX(-100%);
+      z-index: 1000;
+    }
+    .Menu.MenuOpen {
+      transform: translateX(0);
+    }
+  
+    .hamburger {
+      display: block;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .searchSettings{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+  }
+  .NavigationLink {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .NavigationLink:hover {
+    color: #ddd;
+  }
+  
+  .ActiveLink {
+    color: #f39c12;
+    text-decoration: underline;
+    font-weight: bold;
+  }
+  
+  .hamburger {
+    display: none;
+  }
+  
+  @media (max-width: 950px) {
+    .hamburger {
+      display: block;
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      z-index: 1010;
+    }
+  }
+  
