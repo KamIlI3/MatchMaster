@@ -177,26 +177,16 @@ class Globus extends Component {
                   </li>
                 ))
               ) : (
-                <p>No leagues available</p> // Możesz dodać styl lub dodatkowy komunikat tutaj
+                <p>No leagues available</p> 
               )}
             </ul>
           </div>
 
 
-          <div className={styles.leaguesList1}>
-            {error && <p>{error}</p>}
-            <h2>Leagues</h2>
+          <div className={styles.Favorites}>
+            <h2>Favorites</h2>
             <ul>
-               {leagues.length > 0 ? (
-                leagues.map((league) => (
-                  <li key={league.name}>
-                    <img src={league.logo} alt={`${league.name} logo`} style={{ borderRadius:'5px', width: '40px', height: '40px', marginRight: '8px' }} />
-                    {league.name}
-                  </li>
-                ))
-              ) : (
-                <p>No leagues available</p> // Możesz dodać styl lub dodatkowy komunikat tutaj
-              )}
+               
             </ul>
           </div>
 

@@ -35,7 +35,8 @@
     z-index: 1000;
     overflow-y: auto;
   }
-  .leaguesList li{
+  .leaguesList li,
+  .Favorites li{
     border: 1px solid black;
     height: 50px;
     width: 170px;
@@ -46,18 +47,21 @@
     justify-content: start;
     align-items: center;
     padding-left: 5px;
-    background-color:  rgba(197, 196, 196, 0.4); ;
+    background-color:  rgba(197, 196, 196, 0.2); 
   }
 
-  .leaguesList li:hover{
+  .leaguesList li:hover,
+  .Favorites li:hover{
     cursor: pointer;
+    background-color:  rgba(197, 196, 196, 0.4);
   }
   
-  .leaguesList {
+  .leaguesList,
+  .Favorites {
     scrollbar-color: rgba(0, 0, 0, 0.4) rgba(197, 196, 196, 0.4);
     scrollbar-width: thin;   
   }
-  .leaguesList1 {
+  .Favorites {
     width: 250px; 
     background-color: rgba(0, 0, 0, 0.4); 
     color: white;
@@ -71,55 +75,44 @@
     z-index: 1000;
     overflow-y: auto;
   }
-  .leaguesList1 li{
-    border: 1px solid black;
-    height: 50px;
-    width: 170px;
-    margin-bottom: 5px;
-    border-radius: 15px;
-    position: relative;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    padding-left: 5px;
-    background-color:  rgba(197, 196, 196, 0.4); ;
-  }
-
-  .leaguesList1 li:hover{
-    cursor: pointer;
-  }
-  
-  .leaguesList1 {
-    scrollbar-color: rgba(0, 0, 0, 0.4) rgba(197, 196, 196, 0.4);
-    scrollbar-width: thin;   
-  }
-
   
 
   .ModeSwitch{
     position: absolute;
-    top: 85%;
+    top: 80%;
     width: 250px;
     left: 44.5%;
+    background-color: none;
+    display: flex;
+    justify-content: space-around;
   }
   .ModeButton{
     width: 100px;
     height: 30px;
     border-radius: 50px;
-    border: none;
+    border: solid 1px aliceblue;
   }
 
   #DarkModeButton{
-    background-color: black;
+    background-color: rgba(0, 0, 0, 1);
     color: white;
+    border: none;
+  }
+  #DarkModeButton:hover{
+    border: solid 1px aliceblue;;
+  }
+  #LightModeButton:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgb(81, 190, 218);
+    border: solid 1px aliceblue;
   }
 
- 
   button {
     background: transparent;
     border: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
+    font-family: cursive;
   }
 

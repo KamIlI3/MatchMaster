@@ -54,9 +54,11 @@ function NavMenu() {
         </Link>
       </nav>
 
-      <div className={`${styles.searchSettings} ${isOpen ? styles.MenuOpen : ""}`}>
-        <button>Search</button>
-        <button>Settings</button>
+      <div
+        className={styles.searchSettings}
+      >
+        <button className={styles.OptionButtons}>Search</button>
+        <button className={styles.OptionButtons}>Settings</button>
       </div>
     </div>
   );
