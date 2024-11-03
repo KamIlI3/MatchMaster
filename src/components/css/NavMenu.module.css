@@ -32,7 +32,7 @@
 .NavigationLink:hover,
 .ActiveLink {
   color: rgb(81, 190, 218);
-  box-shadow: 0px 2px rgb(81, 190, 218);
+  box-shadow: 0px 3px rgb(81, 190, 218);
 }
 
 .searchSettings {
