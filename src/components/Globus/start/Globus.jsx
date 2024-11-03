@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import styles from '../../css/Globus.module.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; // Importujemy CSS2DRenderer
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; 
+import { FaStar } from 'react-icons/fa';
 
 import { createEarth } from '../helpers/earth';
 import { createSkyBox } from '../helpers/skyBox';
@@ -19,6 +20,7 @@ class Globus extends Component {
 
   state = {
     leagues: [],
+    favorites: [],
     error: null,
   };
 
@@ -156,37 +158,93 @@ class Globus extends Component {
       this.addCountryLabels(feature);
     });
   }
+  toggleFavorite = (league) => {
+    this.setState((prevState) => {
+      const isFavorite = prevState.favorites.some((fav) => fav.name === league.name);
+
+      const updatedFavorites = isFavorite
+        ? prevState.favorites.filter((fav) => fav.name !== league.name)
+        : [...prevState.favorites, league];
+
+      return { favorites: updatedFavorites }; 
+    });
+  };
 
   render() {
-
-    const { leagues, error } = this.state;
+    const { leagues, favorites, error } = this.state;
 
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
-            
+          
           <div className={styles.leaguesList}>
             {error && <p>{error}</p>}
             <h2>Leagues</h2>
             <ul>
-               {leagues.length > 0 ? (
-                leagues.map((league) => (
-                  <li key={league.name}>
-                    <img src={league.logo} alt={`${league.name} logo`} style={{ borderRadius:'5px', width: '40px', height: '40px', marginRight: '8px' }} />
-                    {league.name}
-                  </li>
-                ))
+              {leagues.length > 0 ? (
+                leagues.map((league) => {
+                  const isFavorite = favorites.some((fav) => fav.name === league.name);
+
+                  return (
+                    <li key={league.name}>
+                      <img
+                        src={league.logo}
+                        alt={`${league.name} logo`}
+                        style={{
+                          borderRadius: '5px',
+                          width: '30px',
+                          height: '30px',
+                          marginRight: '8px'
+                        }}
+                      />
+                      {league.name}
+                      <FaStar
+                        onClick={() => this.toggleFavorite(league)}
+                        style={{
+                          marginLeft: '8px',
+                          cursor: 'pointer',
+                          color: isFavorite ? 'gold' : 'gray' 
+                        }}
+                      />
+                    </li>
+                  );
+                })
               ) : (
-                <p>No leagues available</p> 
+                <p>No leagues available</p>
               )}
             </ul>
           </div>
 
-
           <div className={styles.Favorites}>
             <h2>Favorites</h2>
             <ul>
-               
+              {favorites.length > 0 ? (
+                favorites.map((fav) => (
+                  <li key={fav.name} style={{ display: 'flex', alignItems: 'center' }}>
+                    <img
+                      src={fav.logo}
+                      alt={`${fav.name} logo`}
+                      style={{
+                        borderRadius: '5px',
+                        width: '30px',
+                        height: '30px',
+                        marginRight: '8px'
+                      }}
+                    />
+                    {fav.name}
+                    <FaStar
+                      onClick={() => this.toggleFavorite(fav)} 
+                      style={{
+                        marginLeft: '8px',
+                        cursor: 'pointer',
+                        color: 'gold' 
+                      }}
+                    />
+                  </li>
+                ))
+              ) : (
+                <p>No favorites added</p>
+              )}
             </ul>
           </div>
 
