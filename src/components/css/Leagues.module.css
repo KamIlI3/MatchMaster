@@ -1,0 +1,52 @@
+.leaguesList {
+    width: 250px; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    color: white;
+    padding: 10px;
+    overflow: hidden;
+    top: 15%;
+    left: 25%;
+    border-radius: 15px;
+    max-height: 70vh; 
+    position: absolute;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .leaguesList li{
+    border: 1px solid black;
+    height: 50px;
+    width: 170px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 5px;
+    background-color:  rgba(197, 196, 196, 0.2); 
+  }
+
+  .leaguesList li:hover{
+    cursor: pointer;
+    background-color:  rgba(197, 196, 196, 0.4);
+  }
+  
+  .leaguesList{
+    scrollbar-color: rgba(0, 0, 0, 0.4) rgba(197, 196, 196, 0.4);
+    scrollbar-width: thin;   
+  }
+
+  .matchesWrapper{
+    width: 650px; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    color: white;
+    padding: 10px;
+    top: 15%;
+    left: 40%;
+    border-radius: 15px;
+    height: 70vh;
+    max-height: 70vh; 
+    position: absolute;
+    z-index: 1000;
+    overflow-y: auto;
+  }

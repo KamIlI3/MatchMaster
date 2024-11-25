@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styles from "../../css/Globus.module.css";
+import styles from "../../css/Leagues.module.css";
 import * as THREE from "three";
 import { FaStar } from "react-icons/fa";
 
@@ -7,11 +7,15 @@ import { createEarth } from "../helpers/earth";
 import { createSkyBox } from "../helpers/skyBox";
 
 import { fetchTopLeagues } from "../../api/fetchLeagues";
+import { fetchMatches } from "../../api/fetchMatches";
 
 class Leagues extends Component {
   state = {
     leagues: [],
     favorites: [],
+    selectedLeague: null,
+    selectedDate: new Date().toISOString().split("T")[0],
+    matches: [],
     error: null,
   };
 
@@ -19,6 +23,7 @@ class Leagues extends Component {
     this.initScene();
     this.startAnimation();
     this.loadLeagues();
+    this.loadMatches(this.state.selectedDate); // Ładujemy mecze na dziś
   }
 
   initScene = () => {
@@ -67,6 +72,33 @@ class Leagues extends Component {
     });
   };
 
+  loadMatches = async (date) => {
+    try {
+      const matches = await fetchMatches(date); // Pobieramy mecze za pomocą fetchMatches
+      this.setState({ matches }); // Ustawiamy pełną listę meczów w stanie
+    } catch (error) {
+      this.setState({ error: "Error fetching matches" });
+    }
+  };
+  
+
+  handleLeagueSelect = (league) => {
+    const { selectedDate } = this.state;
+  
+    this.setState({ selectedLeague: league }, () => {
+      this.loadMatches(selectedDate, league.id); // Ładowanie meczów dla wybranej ligi
+    });
+  };
+
+  handleDateChange = (event) => {
+    const newDate = event.target.value; // Wybrana data
+    const { selectedLeague } = this.state; // Zwracamy także wybraną ligę
+    
+    this.setState({ selectedDate: newDate }, () => {
+      this.loadMatches(newDate, selectedLeague ? selectedLeague.id : null); // Załaduj mecze na wybraną datę i ewentualną ligę
+    });
+  };
+
   render() {
     const { leagues, favorites, error } = this.state;
 
@@ -84,7 +116,10 @@ class Leagues extends Component {
                   );
 
                   return (
-                    <li key={league.name}>
+                    <li
+                      key={league.id}
+                      onClick={() => this.handleLeagueSelect(league)}
+                    >
                       <img
                         src={league.logo}
                         alt={`${league.name} logo`}
@@ -112,6 +147,55 @@ class Leagues extends Component {
               )}
             </ul>
           </div>
+
+          <div className={styles.matchesWrapper}>
+  <h2>Matches</h2>
+  {this.state.selectedLeague && (
+    <div>
+      <h3>{this.state.selectedLeague.name}</h3>
+    </div>
+  )}
+  <label>
+    Select Date:
+    <input
+      type="date"
+      value={this.state.selectedDate}
+      onChange={this.handleDateChange}
+    />
+  </label>
+  <ul>
+  {this.state.matches.length > 0 ? (
+    this.state.matches.map((match) => (
+      <li key={match.fixture.id}>
+        <img
+          src={match.teams.home.logo}
+          alt={`${match.teams.home.name} logo`}
+          style={{
+            width: "20px",
+            height: "20px",
+            marginRight: "5px",
+          }}
+        />
+        <strong>{match.teams.home.name}</strong> vs{" "}
+        <img
+          src={match.teams.away.logo}
+          alt={`${match.teams.away.name} logo`}
+          style={{
+            width: "20px",
+            height: "20px",
+            marginLeft: "5px",
+          }}
+        />
+        <strong>{match.teams.away.name}</strong>
+        <p>{new Date(match.fixture.date).toLocaleString()}</p>
+      </li>
+    ))
+  ) : (
+    <p>No matches available for this date.</p>
+  )}
+</ul>
+
+</div>
 
           <div
             className={styles.globeWrapper}
