@@ -11,19 +11,19 @@ import { fetchMatches } from "../../api/fetchMatches";
 
 class Leagues extends Component {
   state = {
-    leagues: [],
+    leagues: [], 
+    matches: [], 
+    selectedLeague: null, 
+    selectedDate: new Date().toISOString().split("T")[0], 
     favorites: [],
-    selectedLeague: null,
-    selectedDate: new Date().toISOString().split("T")[0],
-    matches: [],
-    error: null,
+    error: null, 
   };
 
   componentDidMount() {
     this.initScene();
     this.startAnimation();
     this.loadLeagues();
-    this.loadMatches(this.state.selectedDate); // Ładujemy mecze na dziś
+    this.loadMatches(this.state.selectedDate); 
   }
 
   initScene = () => {
@@ -72,30 +72,42 @@ class Leagues extends Component {
     });
   };
 
-  loadMatches = async (date) => {
+  loadMatches = async (date, leagueId = null) => {
     try {
-      const matches = await fetchMatches(date); // Pobieramy mecze za pomocą fetchMatches
-      this.setState({ matches }); // Ustawiamy pełną listę meczów w stanie
+      const matches = await fetchMatches(date, leagueId); 
+      this.setState({ matches });
     } catch (error) {
       this.setState({ error: "Error fetching matches" });
     }
   };
-  
 
-  handleLeagueSelect = (league) => {
-    const { selectedDate } = this.state;
-  
-    this.setState({ selectedLeague: league }, () => {
-      this.loadMatches(selectedDate, league.id); // Ładowanie meczów dla wybranej ligi
+  handleLeagueSelect = async (league) => {
+    console.log("Selected league:", league); 
+    this.setState({ selectedLeague: league }, async () => {
+        try {
+            const matches = await fetchMatches(this.state.selectedDate, league.id);
+            console.log("Fetched matches:", matches); 
+            this.setState({ matches });
+        } catch (error) {
+            console.error('Error fetching matches for selected league:', error);
+            this.setState({ matches: [], error: 'Failed to fetch matches' });
+        }
     });
-  };
+};
 
-  handleDateChange = (event) => {
-    const newDate = event.target.value; // Wybrana data
-    const { selectedLeague } = this.state; // Zwracamy także wybraną ligę
-    
-    this.setState({ selectedDate: newDate }, () => {
-      this.loadMatches(newDate, selectedLeague ? selectedLeague.id : null); // Załaduj mecze na wybraną datę i ewentualną ligę
+  handleDateChange = async (event) => {
+    const selectedDate = event.target.value;
+    this.setState({ selectedDate }, async () => {
+      try {
+        const matches = await fetchMatches(
+          this.state.selectedDate,
+          this.state.selectedLeague?.id 
+        );
+        this.setState({ matches });
+      } catch (error) {
+        console.error('Error fetching matches for selected date:', error);
+        this.setState({ matches: [], error: 'Failed to fetch matches' });
+      }
     });
   };
 
@@ -118,7 +130,7 @@ class Leagues extends Component {
                   return (
                     <li
                       key={league.id}
-                      onClick={() => this.handleLeagueSelect(league)}
+                      onClick={() => this.handleLeagueSelect(league)} 
                     >
                       <img
                         src={league.logo}
@@ -132,7 +144,10 @@ class Leagues extends Component {
                       />
                       {league.name}
                       <FaStar
-                        onClick={() => this.toggleFavorite(league)}
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          this.toggleFavorite(league);
+                        }}
                         style={{
                           marginLeft: "8px",
                           cursor: "pointer",
@@ -149,53 +164,52 @@ class Leagues extends Component {
           </div>
 
           <div className={styles.matchesWrapper}>
-  <h2>Matches</h2>
-  {this.state.selectedLeague && (
-    <div>
-      <h3>{this.state.selectedLeague.name}</h3>
-    </div>
-  )}
-  <label>
-    Select Date:
-    <input
-      type="date"
-      value={this.state.selectedDate}
-      onChange={this.handleDateChange}
-    />
-  </label>
-  <ul>
-  {this.state.matches.length > 0 ? (
-    this.state.matches.map((match) => (
-      <li key={match.fixture.id}>
-        <img
-          src={match.teams.home.logo}
-          alt={`${match.teams.home.name} logo`}
-          style={{
-            width: "20px",
-            height: "20px",
-            marginRight: "5px",
-          }}
-        />
-        <strong>{match.teams.home.name}</strong> vs{" "}
-        <img
-          src={match.teams.away.logo}
-          alt={`${match.teams.away.name} logo`}
-          style={{
-            width: "20px",
-            height: "20px",
-            marginLeft: "5px",
-          }}
-        />
-        <strong>{match.teams.away.name}</strong>
-        <p>{new Date(match.fixture.date).toLocaleString()}</p>
-      </li>
-    ))
-  ) : (
-    <p>No matches available for this date.</p>
-  )}
-</ul>
-
-</div>
+            <h2>Matches</h2>
+            {this.state.selectedLeague && (
+              <div>
+                <h3>{this.state.selectedLeague.name}</h3>
+              </div>
+            )}
+            <label>
+              Select Date:
+              <input
+                type="date"
+                value={this.state.selectedDate}
+                onChange={this.handleDateChange}
+              />
+            </label>
+            <ul>
+              {this.state.matches.length > 0 ? (
+                this.state.matches.map((match) => (
+                  <li key={match.fixture.id}>
+                    <img
+                      src={match.teams.home.logo}
+                      alt={`${match.teams.home.name} logo`}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        marginRight: "5px",
+                      }}
+                    />
+                    <strong>{match.teams.home.name}</strong> vs{" "}
+                    <img
+                      src={match.teams.away.logo}
+                      alt={`${match.teams.away.name} logo`}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        marginLeft: "5px",
+                      }}
+                    />
+                    <strong>{match.teams.away.name}</strong>
+                    <p>{new Date(match.fixture.date).toLocaleString()}</p>
+                  </li>
+                ))
+              ) : (
+                <p>No matches available for this date.</p>
+              )}
+            </ul>
+          </div>
 
           <div
             className={styles.globeWrapper}
