@@ -96,7 +96,6 @@ class Globus extends Component {
 
         this.earthSphere.add(countryLabel);
       } catch (error){
-        // console.error('Błąd przy obliczaniu centroidu dla kraju:', feature.properties.name, error);
       }
       } else {
         console.warn('Pomijanie kraju o nieobsługiwanym typie geometrii:', feature.properties.name, feature.geometry.type);
@@ -105,7 +104,7 @@ class Globus extends Component {
 
     loadLeagues = async () => {
       try {
-        const leagues = await fetchTopLeagues(); // Użycie funkcji z API
+        const leagues = await fetchTopLeagues(); 
         this.setState({ leagues });
       } catch (error) {
         this.setState({ error: 'Error fetching leagues' });

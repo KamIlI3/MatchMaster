@@ -2,6 +2,7 @@ import React from 'react';
 // import styles from '../css/Leagues.module.css';
 
 import NavMenu from '../common/NavMenu';
+import Leagues from '../Globus/leagues/Leagues'
 
 function LeaguesPage(){
 
@@ -9,6 +10,7 @@ function LeaguesPage(){
 
       <div>
         <NavMenu />
+        <Leagues />
       </div>
       
     )
