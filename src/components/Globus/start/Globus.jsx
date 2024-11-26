@@ -16,6 +16,8 @@ import * as turf from '@turf/turf';
 
 import { fetchTopLeagues } from '../../api/fetchLeagues';
 
+import { useNavigate } from 'react-router-dom';
+
 class Globus extends Component {
 
   state = {
@@ -169,6 +171,10 @@ class Globus extends Component {
     });
   };
 
+  handleLeagueClick = (league) => {
+    this.props.navigate('/leagues', { state: { league } }); 
+  };
+
   render() {
     const { leagues, favorites, error } = this.state;
 
@@ -185,7 +191,8 @@ class Globus extends Component {
                   const isFavorite = favorites.some((fav) => fav.name === league.name);
 
                   return (
-                    <li key={league.name}>
+                    <li key={league.name} onClick={() => this.handleLeagueClick(league)}> 
+                      
                       <img
                         src={league.logo}
                         alt={`${league.name} logo`}
@@ -258,4 +265,4 @@ class Globus extends Component {
   }
 }
 
-export default Globus;
+export default (props) => <Globus {...props} navigate={useNavigate()} />;

@@ -11,7 +11,7 @@ export const fetchMatchDetails = async (fixtureId) => {
     try {
       const response = await fetch(url, options);
       const data = await response.json();
-      return data.response[0]; // Zakładamy, że zwracana jest jedna odpowiedź
+      return data.response[0]; 
     } catch (error) {
       console.error('Error fetching match details:', error);
       throw new Error('Failed to fetch match details');

@@ -29,14 +29,14 @@ function NavMenu() {
           className={styles.NavigationLink}
           activeClassName={styles.ActiveLink}
         >
-          Leagues
+          Incoming
         </Link>
         <Link
           to="/teams"
           className={styles.NavigationLink}
           activeClassName={styles.ActiveLink}
         >
-          Teams
+          Results
         </Link>
         <Link
           to="/international"
