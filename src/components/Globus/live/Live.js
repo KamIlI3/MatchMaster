@@ -9,9 +9,9 @@ import { fetchLiveMatches } from "../../api/fetchLiveMatches";
 
 class Live extends Component {
   state = {
-    liveMatches: [], // Przechowuje mecze na żywo
-    favorites: [], // Przechowuje ulubione mecze
-    error: null, // Przechowuje ewentualne błędy
+    liveMatches: [], 
+    favorites: [],
+    error: null, 
   };
 
   componentDidMount() {
@@ -20,6 +20,7 @@ class Live extends Component {
     this.loadLiveMatches();
   }
 
+  //Scena
   initScene = () => {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
@@ -43,6 +44,7 @@ class Live extends Component {
     this.renderer.render(this.scene, this.camera);
   };
 
+  // live mecze
   loadLiveMatches = async () => {
     try {
       const liveMatches = await fetchLiveMatches();

@@ -1,25 +1,23 @@
-import React, { Component } from 'react';
-import styles from '../../css/Globus.module.css';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'; 
-import { FaStar } from 'react-icons/fa';
+import React, { Component } from "react";
+import styles from "../../css/Globus.module.css";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { FaStar } from "react-icons/fa";
 
-import { createEarth } from '../helpers/earth';
-import { createSkyBox } from '../helpers/skyBox';
-import { addLights } from '../helpers/lights';
-import { addCountryBorders } from '../helpers/countries';
+import { createEarth } from "../helpers/earth";
+import { createSkyBox } from "../helpers/skyBox";
+import { addLights } from "../helpers/lights";
+import { addCountryBorders } from "../helpers/countries";
 
+import countriesData from "../../countries.geo.json";
+import * as turf from "@turf/turf";
 
-import countriesData from '../../countries.geo.json';
-import * as turf from '@turf/turf';
+import { fetchTopLeagues } from "../../api/fetchLeagues";
 
-import { fetchTopLeagues } from '../../api/fetchLeagues';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 class Globus extends Component {
-
   state = {
     leagues: [],
     favorites: [],
@@ -33,9 +31,15 @@ class Globus extends Component {
     this.loadLeagues();
   }
 
+  //Scena
   initScene = () => {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
     this.controls = new OrbitControls(this.camera, this.mount);
     this.controls.enableZoom = true;
 
@@ -56,37 +60,45 @@ class Globus extends Component {
     addCountryBorders(this.earthSphere, countriesData);
 
     this.loadGeoJsonData(countriesData);
-  }
+  };
 
   addListeners = () => {
-    window.addEventListener('resize', this.handleWindowResize);
-  }
+    window.addEventListener("resize", this.handleWindowResize);
+  };
 
   addCountryLabels = (feature) => {
-    if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-      try{
-
-        if (!feature.geometry.coordinates || feature.geometry.coordinates.length === 0) {
-          console.warn('Pusta geometria dla kraju: ', feature.properties.name);
+    if (
+      feature.geometry.type === "Polygon" ||
+      feature.geometry.type === "MultiPolygon"
+    ) {
+      try {
+        if (
+          !feature.geometry.coordinates ||
+          feature.geometry.coordinates.length === 0
+        ) {
+          console.warn("Pusta geometria dla kraju: ", feature.properties.name);
           return;
         }
         const centroid = turf.centroid(feature);
 
         const [longitude, latitude] = centroid.geometry.coordinates;
-        if (typeof longitude !== 'number' || typeof latitude !== 'number') {
-          console.warn('Nieprawidłowe współrzędne dla kraju:', feature.properties.name);
+        if (typeof longitude !== "number" || typeof latitude !== "number") {
+          console.warn(
+            "Nieprawidłowe współrzędne dla kraju:",
+            feature.properties.name
+          );
           return;
         }
 
         const radius = 10;
         const phi = (90 - latitude) * (Math.PI / 180);
-        const theta = ( longitude + 180 ) * (Math.PI / 180 );
-        
+        const theta = (longitude + 180) * (Math.PI / 180);
+
         const x = -radius * Math.sin(phi) * Math.cos(theta);
         const y = radius * Math.cos(phi);
         const z = radius * Math.sin(phi) * Math.sin(theta);
 
-        const countryLabelDiv = document.createElement('div');
+        const countryLabelDiv = document.createElement("div");
         countryLabelDiv.className = styles.countryLabel;
         countryLabelDiv.textContent = feature.properties.name;
 
@@ -95,23 +107,17 @@ class Globus extends Component {
 
         this.scene.add(countryLabel);
 
-
         this.earthSphere.add(countryLabel);
-      } catch (error){
-      }
-      } else {
-        console.warn('Pomijanie kraju o nieobsługiwanym typie geometrii:', feature.properties.name, feature.geometry.type);
-      }
-    };
+      } catch (error) {}
+    } else {
+      console.warn(
+        "Pomijanie kraju o nieobsługiwanym typie geometrii:",
+        feature.properties.name,
+        feature.geometry.type
+      );
+    }
+  };
 
-    loadLeagues = async () => {
-      try {
-        const leagues = await fetchTopLeagues(); 
-        this.setState({ leagues });
-      } catch (error) {
-        this.setState({ error: 'Error fetching leagues' });
-      }
-    };
   
 
   handleWindowResize = () => {
@@ -120,7 +126,7 @@ class Globus extends Component {
     this.labelRenderer.setSize(innerWidth, innerHeight);
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
-  }
+  };
 
   startAnimation = () => {
     requestAnimationFrame(this.startAnimation);
@@ -135,44 +141,68 @@ class Globus extends Component {
         const globeCenter = new THREE.Vector3(0, 0, 0);
 
         const labelVector = labelPosition.clone().sub(globeCenter).normalize();
-        const cameraVector = this.camera.position.clone().sub(globeCenter).normalize();
+        const cameraVector = this.camera.position
+          .clone()
+          .sub(globeCenter)
+          .normalize();
 
         const dotProduct = labelVector.dot(cameraVector);
 
         if (dotProduct > 0) {
           const screenPosition = labelPosition.project(this.camera);
 
-          if (screenPosition.x < -0.1 || screenPosition.x > 0.1 || screenPosition.y < -0.2 || screenPosition.y > 0.2) {
-            labelDiv.style.display = 'none';
+          if (
+            screenPosition.x < -0.1 ||
+            screenPosition.x > 0.1 ||
+            screenPosition.y < -0.2 ||
+            screenPosition.y > 0.2
+          ) {
+            labelDiv.style.display = "none";
+          } else {
+            labelDiv.style.display = "block";
+          }
         } else {
-          labelDiv.style.display = 'block';
+          labelDiv.style.display = "none";
         }
-      } else {
-        labelDiv.style.display = 'none';
-      }
       }
     });
-  }
+  };
 
+  //Granice
   loadGeoJsonData = (geoJsonData) => {
     geoJsonData.features.forEach((feature) => {
       this.addCountryLabels(feature);
     });
-  }
+  };
+
+  //Ligi
+  loadLeagues = async () => {
+    try {
+      const leagues = await fetchTopLeagues();
+      this.setState({ leagues });
+    } catch (error) {
+      this.setState({ error: "Error fetching leagues" });
+    }
+  };
+  
+  //dodawanie do ulubionych
   toggleFavorite = (league) => {
     this.setState((prevState) => {
-      const isFavorite = prevState.favorites.some((fav) => fav.name === league.name);
+      const isFavorite = prevState.favorites.some(
+        (fav) => fav.name === league.name
+      );
 
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
 
-      return { favorites: updatedFavorites }; 
+      return { favorites: updatedFavorites };
     });
   };
 
+  //Selekcja meczy
   handleLeagueClick = (league) => {
-    this.props.navigate('/leagues', { state: { league } }); 
+    this.props.navigate("/leagues", { state: { league } });
   };
 
   render() {
@@ -181,35 +211,41 @@ class Globus extends Component {
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
-          
           <div className={styles.leaguesList}>
             {error && <p>{error}</p>}
             <h2>Leagues</h2>
             <ul>
               {leagues.length > 0 ? (
                 leagues.map((league) => {
-                  const isFavorite = favorites.some((fav) => fav.name === league.name);
+                  const isFavorite = favorites.some(
+                    (fav) => fav.name === league.name
+                  );
 
                   return (
-                    <li key={league.name} onClick={() => this.handleLeagueClick(league)}> 
-                      
+                    <li
+                      key={league.name}
+                      onClick={() => this.handleLeagueClick(league)}
+                    >
                       <img
                         src={league.logo}
                         alt={`${league.name} logo`}
                         style={{
-                          borderRadius: '5px',
-                          width: '30px',
-                          height: '30px',
-                          marginRight: '8px'
+                          borderRadius: "5px",
+                          width: "30px",
+                          height: "30px",
+                          marginRight: "8px",
                         }}
                       />
                       {league.name}
                       <FaStar
-                        onClick={() => this.toggleFavorite(league)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          this.toggleFavorite(league);
+                        }}
                         style={{
-                          marginLeft: '8px',
-                          cursor: 'pointer',
-                          color: isFavorite ? 'gold' : 'gray' 
+                          marginleft: "105%",
+                          cursor: "pointer",
+                          color: isFavorite ? "gold" : "gray",
                         }}
                       />
                     </li>
@@ -226,24 +262,35 @@ class Globus extends Component {
             <ul>
               {favorites.length > 0 ? (
                 favorites.map((fav) => (
-                  <li key={fav.name} style={{ display: 'flex', alignItems: 'center' }}>
+                  <li
+                    key={fav.name}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => this.handleLeagueClick(fav)}
+                  >
                     <img
                       src={fav.logo}
                       alt={`${fav.name} logo`}
                       style={{
-                        borderRadius: '5px',
-                        width: '30px',
-                        height: '30px',
-                        marginRight: '8px'
+                        borderRadius: "5px",
+                        width: "30px",
+                        height: "30px",
+                        marginRight: "8px",
                       }}
                     />
                     {fav.name}
                     <FaStar
-                      onClick={() => this.toggleFavorite(fav)} 
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        this.toggleFavorite(fav);
+                      }}
                       style={{
-                        marginLeft: '8px',
-                        cursor: 'pointer',
-                        color: 'gold' 
+                        marginLeft: "8px",
+                        cursor: "pointer",
+                        color: "gold",
                       }}
                     />
                   </li>
@@ -254,10 +301,17 @@ class Globus extends Component {
             </ul>
           </div>
 
-          <div className={styles.globeWrapper} ref={ref => (this.mount = ref)} />
+          <div
+            className={styles.globeWrapper}
+            ref={(ref) => (this.mount = ref)}
+          />
           <div className={styles.ModeSwitch}>
-            <button className={styles.ModeButton} id={styles.DarkModeButton}>Dark</button>
-            <button className={styles.ModeButton} id={styles.LightModeButton}>Light</button>
+            <button className={styles.ModeButton} id={styles.DarkModeButton}>
+              Dark
+            </button>
+            <button className={styles.ModeButton} id={styles.LightModeButton}>
+              Light
+            </button>
           </div>
         </div>
       </div>

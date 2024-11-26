@@ -11,7 +11,7 @@ import { fetchMatches } from "../../api/fetchMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 // import { fetchLineups } from "../../api/fetchLineups";
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 class Leagues extends Component {
   state = {
@@ -19,9 +19,9 @@ class Leagues extends Component {
     matches: [],
     selectedLeague: null,
     selectedDate: new Date().toISOString().split("T")[0],
-    selectedMatchDetails: null, 
-    selectedMatchLineups: null, 
-    showLineups: false, 
+    selectedMatchDetails: null,
+    selectedMatchLineups: null,
+    showLineups: false,
     favorites: [],
     error: null,
   };
@@ -30,17 +30,18 @@ class Leagues extends Component {
     this.initScene();
     this.startAnimation();
     this.loadLeagues();
-    this.loadMatches(this.state.selectedDate); 
+    this.loadMatches(this.state.selectedDate);
 
     const location = this.props.location;
-  const league = location.state?.league; 
+    const league = location.state?.league;
 
-  if (league) {
-    console.log("Selected league:", league);
-    this.handleLeagueSelect(league); 
-  }
+    if (league) {
+      console.log("Selected league:", league);
+      this.handleLeagueSelect(league);
+    }
   }
 
+  // Scena
   initScene = () => {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
@@ -59,6 +60,12 @@ class Leagues extends Component {
     this.scene.background = createSkyBox();
   };
 
+  startAnimation = () => {
+    requestAnimationFrame(this.startAnimation);
+    this.renderer.render(this.scene, this.camera);
+  };
+
+  // Ligi
   loadLeagues = async () => {
     try {
       const leagues = await fetchTopLeagues();
@@ -68,11 +75,8 @@ class Leagues extends Component {
     }
   };
 
-  startAnimation = () => {
-    requestAnimationFrame(this.startAnimation);
-    this.renderer.render(this.scene, this.camera);
-  };
-
+  
+  // Dodawnie do ulubionych
   toggleFavorite = (league) => {
     this.setState((prevState) => {
       const isFavorite = prevState.favorites.some(
@@ -87,59 +91,63 @@ class Leagues extends Component {
     });
   };
 
+  // Api meczów
   loadMatches = async (date, leagueId = null) => {
     try {
-      const matches = await fetchMatches(date, leagueId); 
+      const matches = await fetchMatches(date, leagueId);
       this.setState({ matches });
     } catch (error) {
       this.setState({ error: "Error fetching matches" });
     }
   };
 
+  //Selekcja meczy
   handleLeagueSelect = async (league) => {
     console.log("Selected league:", league);
     this.setState({ selectedLeague: league }, async () => {
       try {
-        const matches = await fetchMatches(this.state.selectedDate, league.id); 
+        const matches = await fetchMatches(this.state.selectedDate, league.id);
         console.log("Fetched matches:", matches);
         this.setState({ matches });
       } catch (error) {
-        console.error('Error fetching matches for selected league:', error);
-        this.setState({ matches: [], error: 'Failed to fetch matches' });
+        console.error("Error fetching matches for selected league:", error);
+        this.setState({ matches: [], error: "Failed to fetch matches" });
       }
     });
   };
 
+  // Selekcja poprzez date
   handleDateChange = async (event) => {
     const selectedDate = event.target.value;
     this.setState({ selectedDate }, async () => {
       try {
         const matches = await fetchMatches(
           this.state.selectedDate,
-          this.state.selectedLeague?.id 
+          this.state.selectedLeague?.id
         );
         this.setState({ matches });
       } catch (error) {
-        console.error('Error fetching matches for selected date:', error);
-        this.setState({ matches: [], error: 'Failed to fetch matches' });
+        console.error("Error fetching matches for selected date:", error);
+        this.setState({ matches: [], error: "Failed to fetch matches" });
       }
     });
   };
 
+  // Szczegóły meczy
   handleMatchSelect = async (match) => {
     try {
       const matchDetails = await fetchMatchDetails(match.fixture.id);
       this.setState({ selectedMatchDetails: matchDetails });
     } catch (error) {
-      console.error('Error fetching match details:', error);
-      this.setState({ error: 'Failed to fetch match details' });
+      console.error("Error fetching match details:", error);
+      this.setState({ error: "Failed to fetch match details" });
     }
   };
 
   // handleShowLineups = async () => {
   //   const { selectedMatchDetails } = this.state;
   //   if (!selectedMatchDetails) return;
-  
+
   //   try {
   //     const lineups = await fetchLineups(selectedMatchDetails.fixture.id);
   //     this.setState({
@@ -171,7 +179,7 @@ class Leagues extends Component {
                   return (
                     <li
                       key={league.id}
-                      onClick={() => this.handleLeagueSelect(league)} 
+                      onClick={() => this.handleLeagueSelect(league)}
                     >
                       <img
                         src={league.logo}
@@ -186,7 +194,7 @@ class Leagues extends Component {
                       {league.name}
                       <FaStar
                         onClick={(e) => {
-                          e.stopPropagation(); 
+                          e.stopPropagation();
                           this.toggleFavorite(league);
                         }}
                         style={{
@@ -205,67 +213,92 @@ class Leagues extends Component {
           </div>
 
           <div className={styles.matchesWrapper}>
-  <h2>{this.state.selectedMatchDetails ? "Match Details" : "Matches"}</h2>
-  {this.state.selectedMatchDetails ? (
-    <div>
-      <h3>{this.state.selectedMatchDetails.teams.home.name} vs {this.state.selectedMatchDetails.teams.away.name}</h3>
-      <p><strong>Date:</strong> {new Date(this.state.selectedMatchDetails.fixture.date).toLocaleString()}</p>
-      <p><strong>Stadium:</strong> {this.state.selectedMatchDetails.fixture.venue.name}</p>
-      <p><strong>City:</strong> {this.state.selectedMatchDetails.fixture.venue.city}</p>
-      <p><strong>Referee:</strong> {this.state.selectedMatchDetails.fixture.referee || 'Not Available'}</p>
-      <button onClick={() => this.setState({ selectedMatchDetails: null })}>
-        Back to Matches
-      </button>
-    </div>
-  ) : (
-    <>
-      {this.state.selectedLeague && (
-        <div>
-          <h3>{this.state.selectedLeague.name}</h3>
-        </div>
-      )}
-      <label>
-        Select Date:
-        <input
-          type="date"
-          value={this.state.selectedDate}
-          onChange={this.handleDateChange}
-        />
-      </label>
-      <ul>
-        {this.state.matches.length > 0 ? (
-          this.state.matches.map((match) => (
-            <li key={match.fixture.id} onClick={() => this.handleMatchSelect(match)}>
-              <img
-                src={match.teams.home.logo}
-                alt={`${match.teams.home.name} logo`}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  marginRight: "5px",
-                }}
-              />
-              <strong>{match.teams.home.name}</strong> vs{" "}
-              <img
-                src={match.teams.away.logo}
-                alt={`${match.teams.away.name} logo`}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  marginLeft: "5px",
-                }}
-              />
-              <strong>{match.teams.away.name}</strong>
-              <p>{new Date(match.fixture.date).toLocaleString()}</p>
-            </li>
-          ))
-        ) : (
-          <p>No matches available for this date.</p>
-        )}
-      </ul>
-    </>
-  )}
-</div>
+            <h2>
+              {this.state.selectedMatchDetails ? "Match Details" : "Matches"}
+            </h2>
+            {this.state.selectedMatchDetails ? (
+              <div>
+                <h3>
+                  {this.state.selectedMatchDetails.teams.home.name} vs{" "}
+                  {this.state.selectedMatchDetails.teams.away.name}
+                </h3>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {new Date(
+                    this.state.selectedMatchDetails.fixture.date
+                  ).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Stadium:</strong>{" "}
+                  {this.state.selectedMatchDetails.fixture.venue.name}
+                </p>
+                <p>
+                  <strong>City:</strong>{" "}
+                  {this.state.selectedMatchDetails.fixture.venue.city}
+                </p>
+                <p>
+                  <strong>Referee:</strong>{" "}
+                  {this.state.selectedMatchDetails.fixture.referee ||
+                    "Not Available"}
+                </p>
+                <button
+                  onClick={() => this.setState({ selectedMatchDetails: null })}
+                >
+                  Back to Matches
+                </button>
+              </div>
+            ) : (
+              <>
+                {this.state.selectedLeague && (
+                  <div>
+                    <h3>{this.state.selectedLeague.name}</h3>
+                  </div>
+                )}
+                <label>
+                  Select Date:
+                  <input
+                    type="date"
+                    value={this.state.selectedDate}
+                    onChange={this.handleDateChange}
+                  />
+                </label>
+                <ul>
+                  {this.state.matches.length > 0 ? (
+                    this.state.matches.map((match) => (
+                      <li
+                        key={match.fixture.id}
+                        onClick={() => this.handleMatchSelect(match)}
+                      >
+                        <img
+                          src={match.teams.home.logo}
+                          alt={`${match.teams.home.name} logo`}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        <strong>{match.teams.home.name}</strong> vs{" "}
+                        <img
+                          src={match.teams.away.logo}
+                          alt={`${match.teams.away.name} logo`}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginLeft: "5px",
+                          }}
+                        />
+                        <strong>{match.teams.away.name}</strong>
+                        <p>{new Date(match.fixture.date).toLocaleString()}</p>
+                      </li>
+                    ))
+                  ) : (
+                    <p>No matches available for this date.</p>
+                  )}
+                </ul>
+              </>
+            )}
+          </div>
           <div
             className={styles.globeWrapper}
             ref={(ref) => (this.mount = ref)}
