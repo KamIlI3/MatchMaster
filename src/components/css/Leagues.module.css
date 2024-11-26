@@ -50,3 +50,22 @@
     z-index: 1000;
     overflow-y: auto;
   }
+
+  .matchesWrapper li{
+    border: 1px solid black;
+    height: 50px;
+    width: 170px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 5px;
+    background-color:  rgba(197, 196, 196, 0.2); 
+  }
+
+  .matchesWrapper li:hover{
+    cursor: pointer;
+    background-color:  rgba(197, 196, 196, 0.4);
+  }
