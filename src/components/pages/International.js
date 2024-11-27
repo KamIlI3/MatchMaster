@@ -2,6 +2,7 @@ import React from 'react';
 // import styles from '../css/International.module.css';
 
 import NavMenu from '../common/NavMenu';
+import International from '../Globus/international/International';
 
 function InternationalPage(){
 
@@ -9,6 +10,7 @@ function InternationalPage(){
 
       <div>
         <NavMenu />
+        <International />
       </div>
       
     )

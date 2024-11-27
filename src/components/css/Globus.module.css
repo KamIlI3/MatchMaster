@@ -76,37 +76,6 @@
     z-index: 1000;
     overflow-y: auto;
   }
-  
-
-  .ModeSwitch{
-    position: absolute;
-    top: 80%;
-    width: 250px;
-    left: 44.5%;
-    background-color: none;
-    display: flex;
-    justify-content: space-around;
-  }
-  .ModeButton{
-    width: 100px;
-    height: 30px;
-    border-radius: 50px;
-    border: solid 1px aliceblue;
-  }
-
-  #DarkModeButton{
-    background-color: rgba(0, 0, 0, 1);
-    color: white;
-    border: none;
-  }
-  #DarkModeButton:hover{
-    border: solid 1px aliceblue;;
-  }
-  #LightModeButton:hover{
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgb(81, 190, 218);
-    border: solid 1px aliceblue;
-  }
 
   button {
     background: transparent;

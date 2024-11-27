@@ -24,7 +24,7 @@ export const fetchLiveMatches = async () => {
         (countryName === 'Italy' && ['Serie A', 'Coppa Italia', 'Supercoppa Italiana'].includes(leagueName)) ||
         (countryName === 'France' && ['Ligue 1', 'Coupe de France', 'Trophée des Champions'].includes(leagueName)) ||
         (countryName === 'Poland' && ['Ekstraklasa', 'Puchar Polski', 'Superpuchar Polski'].includes(leagueName)) ||
-        ['Champions League', 'Europa League', 'Europa Conference League'].includes(leagueName)
+        ['UEFA Champions League', 'UEFA Europa League', 'UEFA Europa Conference League', 'UEFA Super Cup'].includes(leagueName)
       );
     });
 

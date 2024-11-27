@@ -305,14 +305,6 @@ class Globus extends Component {
             className={styles.globeWrapper}
             ref={(ref) => (this.mount = ref)}
           />
-          <div className={styles.ModeSwitch}>
-            <button className={styles.ModeButton} id={styles.DarkModeButton}>
-              Dark
-            </button>
-            <button className={styles.ModeButton} id={styles.LightModeButton}>
-              Light
-            </button>
-          </div>
         </div>
       </div>
     );

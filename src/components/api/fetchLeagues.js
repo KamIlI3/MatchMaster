@@ -19,7 +19,7 @@ export const fetchTopLeagues = async () => {
           (league.country.name === 'Italy' && ['Serie A', 'Coppa Italia', 'Supercoppa Italiana'].includes(league.league.name)) ||
           (league.country.name === 'France' && ['Ligue 1', 'Coupe de France', 'Trophée des Champions'].includes(league.league.name)) ||
           (league.country.name === 'Poland' && ['Ekstraklasa', 'Puchar Polski', 'Superpuchar Polski'].includes(league.league.name)) ||
-          ['Champions League', 'Europa League', 'Europa Conference League'].includes(league.league.name)
+          ['UEFA Champions League', 'UEFA Europa League', 'UEFA Europa Conference League', 'UEFA Super Cup'].includes(league.league.name)
       );
 
       return topLeagues.map((league) => ({

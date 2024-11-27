@@ -22,9 +22,10 @@ export const fetchMatches = async (date, leagueId = null) => {
     };
 
     const internationalCompetitions = [
-      'Champions League',
-      'Europa League',
-      'Europa Conference League',
+      'UEFA Champions League',
+      'UEFA Europa League',
+      'UEFA Europa Conference League',
+      'UEFA Super Cup',
     ];
 
     const filteredMatches = data.response.filter((match) => {

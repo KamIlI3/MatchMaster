@@ -144,22 +144,6 @@ class Leagues extends Component {
     }
   };
 
-  // handleShowLineups = async () => {
-  //   const { selectedMatchDetails } = this.state;
-  //   if (!selectedMatchDetails) return;
-
-  //   try {
-  //     const lineups = await fetchLineups(selectedMatchDetails.fixture.id);
-  //     this.setState({
-  //       selectedMatchLineups: lineups,
-  //       showLineups: true,
-  //     });
-  //   } catch (error) {
-  //     console.error('Error fetching lineups:', error);
-  //     this.setState({ error: 'Failed to fetch lineups' });
-  //   }
-  // };
-
   render() {
     const { leagues, favorites, error } = this.state;
 
