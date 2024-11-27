@@ -2,7 +2,7 @@ import React from 'react';
 // import styles from '../css/Teams.module.css';
 
 import NavMenu from '../common/NavMenu';
-import Globus from '../Globus/start/Globus';
+import Results from '../Globus/teams/Teams';
 
 function TeamsPage(){
 
@@ -10,7 +10,7 @@ function TeamsPage(){
 
       <div>
         <NavMenu />
-        <Globus />
+        <Results />
       </div>
       
     )
