@@ -18,7 +18,6 @@ export const fetchInternationalCompetitions = async () => {
             'World Cup - Qualification CONCACAF', 'World Cup - Qualification Europe', 'African Nations Championship', 'Africa Cup of Nations', 'Copa America',
             'UEFA Nations League'].includes(league.league.name)
         );
-        console.log(internationalLeagues);
         return internationalLeagues.map((league) => ({
             id: league.league.id, 
             name: league.league.name,

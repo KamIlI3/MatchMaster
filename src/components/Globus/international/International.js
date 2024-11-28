@@ -9,7 +9,6 @@ import { createSkyBox } from "../helpers/skyBox";
 import { fetchInternationalCompetitions } from "../../api/fetchInternational"; 
 import { fetchInternationalMatches } from "../../api/fetchInternationalMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
-// import { fetchLineups } from "../../api/fetchLineups";
 
 
 class International extends Component {
@@ -34,7 +33,6 @@ class International extends Component {
     const location = this.props.location;
 
     if (location?.state?.league) { // Bezpieczna nawigacja
-        console.log("Selected league:", location.state.league);
         this.handleLeagueSelect(location.state.league);
     }
   }
@@ -101,11 +99,9 @@ class International extends Component {
 
   //Selekcja meczy
   handleLeagueSelect = async (league) => {
-    console.log("Selected league:", league);
     this.setState({ selectedLeague: league }, async () => {
       try {
         const matches = await fetchInternationalMatches(this.state.selectedDate, league.id);
-        console.log("Fetched matches:", matches);
         this.setState({ matches });
       } catch (error) {
         console.error("Error fetching matches for selected league:", error);

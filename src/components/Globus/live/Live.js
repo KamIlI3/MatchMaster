@@ -51,7 +51,6 @@ class Live extends Component {
   loadLiveMatches = async () => {
     try {
       const liveMatches = await fetchLiveMatches();
-      console.log("Filtered Live Matches:", liveMatches); // Sprawdź, co zwraca funkcja
       this.setState({ liveMatches });
     } catch (error) {
       console.error("Error loading live matches:", error);

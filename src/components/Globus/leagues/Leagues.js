@@ -36,7 +36,6 @@ class Leagues extends Component {
     const league = location.state?.league;
 
     if (league) {
-      console.log("Selected league:", league);
       this.handleLeagueSelect(league);
     }
   }
@@ -103,11 +102,9 @@ class Leagues extends Component {
 
   //Selekcja meczy
   handleLeagueSelect = async (league) => {
-    console.log("Selected league:", league);
     this.setState({ selectedLeague: league }, async () => {
       try {
         const matches = await fetchMatches(this.state.selectedDate, league.id);
-        console.log("Fetched matches:", matches);
         this.setState({ matches });
       } catch (error) {
         console.error("Error fetching matches for selected league:", error);

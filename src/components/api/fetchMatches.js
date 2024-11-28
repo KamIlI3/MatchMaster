@@ -45,7 +45,6 @@ export const fetchMatches = async (date, leagueId = null) => {
       );
     });
 
-    console.log("Filtered Matches:", filteredMatches); 
     return filteredMatches; 
   } catch (error) {
     console.error('Error fetching matches:', error);
