@@ -48,12 +48,10 @@ export const fetchMatchResults = async (date, leagueId = null) => {
     const matchesWithResults = filteredMatches.map((match) => {
       const homeScore = match.goals.home;
       const awayScore = match.goals.away;
-      const isMatchFinished = match.status === 'FT'; 
 
       return {
         ...match,
         result: `${homeScore} - ${awayScore}`,
-        status: isMatchFinished ? 'Finished' : 'Ongoing',
       };
     });
 

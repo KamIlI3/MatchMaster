@@ -9,30 +9,39 @@ import { createSkyBox } from "../helpers/skyBox";
 import { fetchInternationalCompetitions } from "../../api/fetchInternational"; 
 import { fetchInternationalMatches } from "../../api/fetchInternationalMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
-
+import { fetchIntercontinentalMatchResults } from "../../api/fetchIntercontinentalMatchResults";
+import { fetchStats } from "../../api/fetchMatchStatistics";
+import { fetchLineups } from "../../api/fetchLineups";
+import { fetchMatchEvents } from "../../api/fetchMatchEvents";
 
 class International extends Component {
   state = {
     leagues: [],
     matches: [],
     selectedLeague: null,
-    selectedDate: new Date().toISOString().split("T")[0],
+    upcomingMatchesDate: new Date().toISOString().split("T")[0], // dla nadchodzących meczów
+    pastMatchesDate: new Date().toISOString().split("T")[0], // dla wyników meczów
     selectedMatchDetails: null,
     selectedMatchLineups: null,
+    selectedMatchStats: null,
     showLineups: false,
+    activeSection: null,
     favorites: [],
+    matchEvents: [],
     error: null,
+    results: [],
   };
 
   componentDidMount() {
     this.initScene();
     this.startAnimation();
     this.loadLeagues();
-    this.loadMatches(this.state.selectedDate);
+    this.loadMatches(this.state.upcomingMatchesDate); // Ładujemy nadchodzące mecze
+    this.loadResults(this.state.pastMatchesDate); // Ładujemy wyniki meczów
 
     const location = this.props.location;
 
-    if (location?.state?.league) { // Bezpieczna nawigacja
+    if (location?.state?.league) { 
         this.handleLeagueSelect(location.state.league);
     }
   }
@@ -97,6 +106,16 @@ class International extends Component {
     }
   };
 
+  //Ładowanie wyników
+  loadResults = async (date, leagueId = null) => {
+    try {
+      const results = await fetchIntercontinentalMatchResults(date, leagueId);
+      this.setState({ results });
+    } catch (error) {
+      this.setState({ error: "Error fetching past results" });
+    }
+  };
+
   //Selekcja meczy
   handleLeagueSelect = async (league) => {
     this.setState({ selectedLeague: league }, async () => {
@@ -110,37 +129,98 @@ class International extends Component {
     });
   };
 
-//   // Selekcja poprzez date
-  handleDateChange = async (event) => {
-    const selectedDate = event.target.value;
-    this.setState({ selectedDate }, async () => {
-      try {
-        const matches = await fetchInternationalMatches(
-          this.state.selectedDate,
-          this.state.selectedLeague?.id
-        );
-        this.setState({ matches });
-      } catch (error) {
-        console.error("Error fetching matches for selected date:", error);
-        this.setState({ matches: [], error: "Failed to fetch matches" });
-      }
-    });
-  };
+// Funkcja do zmiany daty dla nadchodzących meczów
+handleUpcomingMatchesDateChange = async (event) => {
+  const upcomingMatchesDate = event.target.value;
+  this.setState({ upcomingMatchesDate }, async () => {
+    try {
+      const matches = await fetchInternationalMatches(upcomingMatchesDate, this.state.selectedLeague?.id);
+      this.setState({ matches });
+    } catch (error) {
+      console.error("Error fetching upcoming matches:", error);
+      this.setState({ matches: [], error: "Failed to fetch upcoming matches" });
+    }
+  });
+};
+
+// Funkcja do zmiany daty dla wyników meczów
+handlePastMatchesDateChange = async (event) => {
+  const pastMatchesDate = event.target.value;
+  this.setState({ pastMatchesDate }, async () => {
+    try {
+      const results = await fetchIntercontinentalMatchResults(pastMatchesDate, this.state.selectedLeague?.id);
+      this.setState({ results });
+    } catch (error) {
+      console.error("Error fetching past match results:", error);
+      this.setState({ results: [], error: "Failed to fetch past match results" });
+    }
+  });
+};
 
 //   // Szczegóły meczy
-  handleMatchSelect = async (match) => {
-    try {
-      const matchDetails = await fetchMatchDetails(match.fixture.id);
-      this.setState({ selectedMatchDetails: matchDetails });
-    } catch (error) {
-      console.error("Error fetching match details:", error);
-      this.setState({ error: "Failed to fetch match details" });
-    }
+handleMatchSelect = async (match) => {
+  try {
+    const matchId = match.fixture.id;
+
+    // Pobieranie szczegółów meczu
+    const matchDetails = await fetchMatchDetails(matchId);
+    const lineups = await fetchLineups(matchId);
+    const stats = await fetchStats(matchId);
+    const events = await fetchMatchEvents(matchId);
+
+    this.setState({
+      selectedMatchDetails: matchDetails,
+      selectedMatchStats: stats,
+      selectedMatchLineups: lineups,
+      events,
+      showStats: false,
+      showLineups: false,
+    });
+  } catch (error) {
+    this.setState({ error: "Failed to fetch match details or statistics" });
+  }
+};
+
+toggleStats = () => {
+  this.setState((prevState) => ({
+    activeSection: prevState.activeSection === "stats" ? null : "stats",
+  }));
+};
+
+toggleLineups = () => {
+  this.setState((prevState) => ({
+    activeSection: prevState.activeSection === "lineups" ? null : "lineups",
+  }));
+};
+
+getEventDescription(event) {
+  const eventTypes = {
+    Goal: `Goal (Assisted by ${event.assist ? event.assist.name : "N/A"})`,
+    subst: "Substitution",
+    Card: event.detail ? event.detail : "Card",
+    owngoal: "Own Goal",
+    penalty: "Penalty",
   };
 
+  if (event.type === "Card" && event.detail === "Yellow Card") {
+    return "Yellow Card";
+  } else if (event.type === "Card" && event.detail === "Red Card") {
+    return "Red Card";
+  }
+
+  return eventTypes[event.type] || "Unknown Event";
+}
 
   render() {
-    const { leagues, favorites, error } = this.state;
+    const { 
+      leagues, 
+      favorites, 
+      error, 
+      selectedMatchDetails,
+      selectedMatchStats,
+      selectedMatchLineups,
+      matchEvents, 
+     } = this.state;
 
     return (
       <div className={styles.globusContainer}>
@@ -192,92 +272,98 @@ class International extends Component {
           </div>
 
           <div className={styles.matchesWrapper}>
-            <h2>
-              {this.state.selectedMatchDetails ? "Match Details" : "Matches"}
-            </h2>
-            {this.state.selectedMatchDetails ? (
-              <div>
-                <h3>
-                  {this.state.selectedMatchDetails.teams.home.name} vs{" "}
-                  {this.state.selectedMatchDetails.teams.away.name}
-                </h3>
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(
-                    this.state.selectedMatchDetails.fixture.date
-                  ).toLocaleString()}
-                </p>
-                <p>
-                  <strong>Stadium:</strong>{" "}
-                  {this.state.selectedMatchDetails.fixture.venue.name}
-                </p>
-                <p>
-                  <strong>City:</strong>{" "}
-                  {this.state.selectedMatchDetails.fixture.venue.city}
-                </p>
-                <p>
-                  <strong>Referee:</strong>{" "}
-                  {this.state.selectedMatchDetails.fixture.referee ||
-                    "Not Available"}
-                </p>
-                <button
-                  onClick={() => this.setState({ selectedMatchDetails: null })}
-                >
-                  Back to Matches
-                </button>
-              </div>
-            ) : (
-              <>
-                {this.state.selectedLeague && (
-                  <div>
-                    <h3>{this.state.selectedLeague.name}</h3>
-                  </div>
-                )}
-                <label>
-                  Select Date:
-                  <input
-                    type="date"
-                    value={this.state.selectedDate}
-                    onChange={this.handleDateChange}
-                  />
-                </label>
-                <ul>
-                  {this.state.matches.length > 0 ? (
-                    this.state.matches.map((match) => (
-                      <li
-                        key={match.fixture.id}
-                        onClick={() => this.handleMatchSelect(match)}
-                      >
-                        <img
-                          src={match.teams.home.logo}
-                          alt={`${match.teams.home.name} logo`}
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        <strong>{match.teams.home.name}</strong> vs{" "}
-                        <img
-                          src={match.teams.away.logo}
-                          alt={`${match.teams.away.name} logo`}
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            marginLeft: "5px",
-                          }}
-                        />
-                        <strong>{match.teams.away.name}</strong>
-                        <p>{new Date(match.fixture.date).toLocaleString()}</p>
-                      </li>
-                    ))
-                  ) : (
-                    <p>No matches available for this date.</p>
-                  )}
-                </ul>
-              </>
-            )}
-          </div>
+  <h2>Matches</h2>
+  <div className={styles.matchesContainer}>
+    <div className={styles.upcomingMatches}>
+      <h3>Upcoming Matches</h3>
+      <label>
+        Select Date for Upcoming Matches:
+        <input
+          type="date"
+          value={this.state.upcomingMatchesDate}
+          onChange={this.handleUpcomingMatchesDateChange}
+        />
+      </label>
+      {this.state.matches.length > 0 ? (
+        <ul>
+          {this.state.matches.map((match) => (
+            <li key={match.fixture.id} onClick={() => this.handleMatchSelect(match)}>
+              <img
+                src={match.teams.home.logo}
+                alt={`${match.teams.home.name} logo`}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginRight: "5px",
+                }}
+              />
+              <strong>{match.teams.home.name}</strong> vs{" "}
+              <img
+                src={match.teams.away.logo}
+                alt={`${match.teams.away.name} logo`}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginLeft: "5px",
+                }}
+              />
+              <strong>{match.teams.away.name}</strong>
+              <p>{new Date(match.fixture.date).toLocaleString()}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No upcoming matches available for this date.</p>
+      )}
+    </div>
+
+    <div className={styles.pastResults}>
+  <h3>Past Results</h3>
+  <label>
+    Select Date for Past Results:
+    <input
+      type="date"
+      value={this.state.pastMatchesDate}
+      onChange={this.handlePastMatchesDateChange}
+    />
+  </label>
+  {this.state.results.length > 0 ? (
+    <ul>
+      {this.state.results.map((result) => (
+        <li
+          key={result.fixture.id}
+          onClick={() => this.handleMatchSelect(result)}
+        >
+          <img
+            src={result.teams.home.logo}
+            alt={`${result.teams.home.name} logo`}
+            style={{
+              width: "20px",
+              height: "20px",
+              marginRight: "5px",
+            }}
+          />
+          <strong>{result.teams.home.name}</strong> vs{" "}
+          <img
+            src={result.teams.away.logo}
+            alt={`${result.teams.away.name} logo`}
+            style={{
+              width: "20px",
+              height: "20px",
+              marginLeft: "5px",
+            }}
+          />
+          <strong>{result.teams.away.name}</strong>
+          <p>{result.result}</p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>No results available for this date.</p>
+  )}
+</div>
+  </div>
+</div>
           <div
             className={styles.globeWrapper}
             ref={(ref) => (this.mount = ref)}

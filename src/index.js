@@ -13,7 +13,7 @@ root.render(
   <BrowserRouter>
         <Routes>
           <Route path="/" element={<Start />} />
-           <Route path="/leagues" element={<Leagues />} />
+          <Route path="/leagues" element={<Leagues />} />
           <Route path="/teams" element={<Teams />} />
           <Route path="/international" element={<International />} />
           <Route path="/live" element={<Live />} />

@@ -20,35 +20,30 @@ function NavMenu() {
         <Link
           to="/"
           className={styles.NavigationLink}
-          activeClassName={styles.ActiveLink}
         >
           Start
         </Link>
         <Link
           to="/leagues"
           className={styles.NavigationLink}
-          activeClassName={styles.ActiveLink}
         >
           Incoming
         </Link>
         <Link
           to="/teams"
           className={styles.NavigationLink}
-          activeClassName={styles.ActiveLink}
         >
           Results
         </Link>
         <Link
           to="/international"
           className={styles.NavigationLink}
-          activeClassName={styles.ActiveLink}
         >
           International
         </Link>
         <Link
           to="/live"
           className={styles.NavigationLink}
-          activeClassName={styles.ActiveLink}
         >
           Live
         </Link>

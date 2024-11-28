@@ -1,5 +1,5 @@
-export const fetchInternationalMatches = async (date, leagueId = null) => {
-    const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${date}`;
+export const fetchIntercontinentalMatchResults = async (date, leagueId = null) => {
+    const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?date=${date}&status=FT`; 
     const options = {
       method: 'GET',
       headers: {
@@ -11,7 +11,6 @@ export const fetchInternationalMatches = async (date, leagueId = null) => {
     try {
       const response = await fetch(url, options);
       const data = await response.json();
-  
       
       const validCompetitions = [
         'World Cup', 
@@ -28,23 +27,32 @@ export const fetchInternationalMatches = async (date, leagueId = null) => {
       ];
   
       const filteredMatches = data.response.filter((match) => {
-        const countryName = match.league.country;
         const leagueName = match.league.name;
   
-        const isInValidCompetitions =
-          validCompetitions[countryName] &&
-          validCompetitions[countryName].includes(leagueName);
+        // Upewniamy się, że liga jest na liście validCompetitions
+        const isInValidCompetitions = validCompetitions.includes(leagueName);
   
+        // Sprawdzamy, czy liga jest wśród dozwolonych turniejów i czy odpowiada id ligi (jeśli podano)
         return (
-          ((isInValidCompetitions) &&
-            (!leagueId || match.league.id === leagueId))
+          isInValidCompetitions &&
+          (!leagueId || match.league.id === leagueId)
         );
       });
   
-      return filteredMatches; 
+      const matchesWithResults = filteredMatches.map((match) => {
+        const homeScore = match.goals.home;
+        const awayScore = match.goals.away;
+  
+        return {
+          ...match,
+          result: `${homeScore} - ${awayScore}`,
+        };
+      });
+  
+      return matchesWithResults;
     } catch (error) {
-      console.error('Error fetching matches:', error);
-      throw new Error('Failed to fetch matches');
+      console.error('Error fetching match results:', error);
+      throw new Error('Failed to fetch match results');
     }
   };
   
