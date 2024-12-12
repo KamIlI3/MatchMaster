@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import styles from "../../css/Leagues.module.css";
-import * as THREE from "three";
 import { FaStar } from "react-icons/fa";
-
-import { createEarth } from "../helpers/earth";
-import { createSkyBox } from "../helpers/skyBox";
 
 import { fetchTopLeagues } from "../../api/fetchLeagues";
 import { fetchMatches } from "../../api/fetchMatches";
@@ -27,8 +23,6 @@ class Leagues extends Component {
   };
 
   componentDidMount() {
-    this.initScene();
-    this.startAnimation();
     this.loadLeagues();
     this.loadMatches(this.state.selectedDate);
 
@@ -40,29 +34,7 @@ class Leagues extends Component {
     }
   }
 
-  // Scena
-  initScene = () => {
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.appendChild(this.renderer.domElement);
-
-    this.earthSphere = createEarth();
-    this.scene.add(this.earthSphere);
-    this.scene.background = createSkyBox();
-  };
-
-  startAnimation = () => {
-    requestAnimationFrame(this.startAnimation);
-    this.renderer.render(this.scene, this.camera);
-  };
+  
 
   // Ligi
   loadLeagues = async () => {

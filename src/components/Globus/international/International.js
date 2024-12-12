@@ -1,9 +1,5 @@
 import React, { Component } from "react";
 import styles from "../../css/Leagues.module.css";
-import * as THREE from "three";
-
-import { createEarth } from "../helpers/earth";
-import { createSkyBox } from "../helpers/skyBox";
 
 import { fetchInternationalCompetitions } from "../../api/fetchInternational"; 
 import { fetchInternationalMatches } from "../../api/fetchInternationalMatches";
@@ -30,8 +26,6 @@ class International extends Component {
   };
 
   componentDidMount() {
-    this.initScene();
-    this.startAnimation();
     this.loadLeagues();
     this.loadMatches(this.state.upcomingMatchesDate);
     this.loadResults(this.state.pastMatchesDate);
@@ -43,28 +37,7 @@ class International extends Component {
     }
   }
 
-  initScene = () => {
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.mount.appendChild(this.renderer.domElement);
-
-    this.earthSphere = createEarth();
-    this.scene.add(this.earthSphere);
-    this.scene.background = createSkyBox();
-  };
-
-  startAnimation = () => {
-    requestAnimationFrame(this.startAnimation);
-    this.renderer.render(this.scene, this.camera);
-  };
 
   loadLeagues = async () => {
     this.setState({ isLoading: true, error: null });
