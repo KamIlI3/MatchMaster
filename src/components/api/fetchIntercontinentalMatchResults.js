@@ -16,7 +16,6 @@ export const fetchIntercontinentalMatchResults = async (date, leagueId = null) =
       'World Cup', 
       'Euro Championship', 
       'Confederations Cup', 
-      'FIFA Intercontinental Cup', 
       'World Cup - Qualification Intercontinental Play-offs',
       'World Cup - Qualification CONCACAF', 
       'World Cup - Qualification Europe', 

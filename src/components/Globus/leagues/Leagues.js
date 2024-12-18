@@ -5,6 +5,7 @@ import { FaStar } from "react-icons/fa";
 import { fetchTopLeagues } from "../../api/fetchLeagues";
 import { fetchMatches } from "../../api/fetchMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
+import { fetchTeamDetails } from "../../api/fetchTeamDetails";
 // import { fetchLineups } from "../../api/fetchLineups";
 
 import { useLocation } from "react-router-dom";
@@ -17,6 +18,7 @@ class Leagues extends Component {
     selectedDate: new Date().toISOString().split("T")[0],
     selectedMatchDetails: null,
     selectedMatchLineups: null,
+    selectedTeamDetails: null,
     showLineups: false,
     favorites: [],
     error: null,
@@ -113,8 +115,94 @@ class Leagues extends Component {
     }
   };
 
+  handleFetchTeamDetails = async (teamId, leagueId) => {
+    const url = `https://api-football-v1.p.rapidapi.com/v3/teams/statistics?league=${leagueId}&season=2020&team=${teamId}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-key': 'aa3e27b7f2msh5c8003078a944f9p1f07e6jsn35e6c0a6fdd6',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+        },
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+
+        console.log("Full API Response:", result); // Logowanie całej odpowiedzi
+
+        // Sprawdzamy, czy odpowiedź zawiera drużynę
+        if (result && result.response) {
+            const teamData = result.response;
+            const teamDetails = teamData.team;
+            const leagueDetails = teamData.league;
+            const form = teamData.form;
+            const fixtures = teamData.fixtures;
+            const goalsFor = teamData.goals.for;
+            const goalsAgainst = teamData.goals.against;
+            const biggest = teamData.biggest;
+            const cleanSheet = teamData.clean_sheet;
+            const failedToScore = teamData.failed_to_score;
+            const penalty = teamData.penalty;
+            const lineups = teamData.lineups;
+            const cards = teamData.cards;
+
+            // Wyświetlamy szczegóły drużyny
+            console.log("Team Details:", teamDetails);
+            console.log("League Details:", leagueDetails);
+            console.log("Form:", form);
+            console.log("Fixtures:", fixtures);
+            console.log("Goals For:", goalsFor);
+            console.log("Goals Against:", goalsAgainst);
+            console.log("Biggest Streak:", biggest.streak);
+            console.log("Biggest Wins:", biggest.wins);
+            console.log("Biggest Losses:", biggest.loses);
+            console.log("Goals For (Home and Away):", biggest.goals.for);
+            console.log("Goals Against (Home and Away):", biggest.goals.against);
+            console.log("Clean Sheets:", cleanSheet);
+            console.log("Failed to Score:", failedToScore);
+            console.log("Penalty Scored:", penalty.scored);
+            console.log("Penalty Missed:", penalty.missed);
+            console.log("Total Penalty Scored:", penalty.total);
+            console.log("Lineups:", lineups);
+            console.log("Cards:", cards);
+
+            // Uaktualniamy stan, aby przechować dane o drużynie i jej statystykach
+            this.setState(
+                {
+                    selectedTeamDetails: teamDetails,
+                    teamStatistics: {
+                        form,
+                        fixtures,
+                        goalsFor,
+                        goalsAgainst,
+                        biggest,
+                        cleanSheet,
+                        failedToScore,
+                        penalty,
+                        lineups,
+                        cards
+                    },
+                },
+                () => {
+                    console.log("Updated selectedTeamDetails:", this.state.selectedTeamDetails);
+                    console.log("Updated teamStatistics:", this.state.teamStatistics);
+                }
+            );
+        } else {
+            console.log("No team data found in the response.");
+        }
+    } catch (error) {
+        console.error("Error fetching team details:", error);
+    }
+};
+
+  
+  
+  
+
   render() {
-    const { leagues, favorites, error } = this.state;
+    const { leagues, favorites, error} = this.state;
 
     return (
       <div className={styles.globusContainer}>
@@ -166,15 +254,148 @@ class Leagues extends Component {
           </div>
 
           <div className={styles.matchesWrapper}>
-            <h2>
-              {this.state.selectedMatchDetails ? "Match Details" : "Matches"}
-            </h2>
-            {this.state.selectedMatchDetails ? (
+          <h2>
+  {this.state.selectedTeamDetails
+    ? "Team Details"
+    : this.state.selectedMatchDetails
+    ? "Match Details"
+    : "Matches"}
+</h2>
+
+{/* Sprawdzanie, czy mamy dane drużyny w stanie */}
+{this.state.selectedTeamDetails ? (
+  <div>
+    <h3>{this.state.selectedTeamDetails.name}</h3>
+    <img src={this.state.selectedTeamDetails.logo} alt={this.state.selectedTeamDetails.name} />
+
+    <div>
+      <h4>Form:</h4>
+      <p>{this.state.teamStatistics.form}</p>
+
+      <h4>Fixtures:</h4>
+      <p>Home Matches Played: {this.state.teamStatistics.fixtures.played.home}</p>
+      <p>Away Matches Played: {this.state.teamStatistics.fixtures.played.away}</p>
+      <p>Total Matches Played: {this.state.teamStatistics.fixtures.played.total}</p>
+
+      <h4>Goals</h4>
+      <p>Goals Scored: {this.state.teamStatistics.goalsFor.total.total}</p>
+      <p>Goals Conceded: {this.state.teamStatistics.goalsAgainst.total.total}</p>
+      <p>Average Goals Scored: {this.state.teamStatistics.goalsFor.average.total}</p>
+      <p>Average Goals Conceded: {this.state.teamStatistics.goalsAgainst.average.total}</p>
+
+      <h4>Biggest Streak</h4>
+      <p>Wins: {this.state.teamStatistics.biggest.streak.wins}</p>
+      <p>Draws: {this.state.teamStatistics.biggest.streak.draws}</p>
+      <p>Losses: {this.state.teamStatistics.biggest.streak.loses}</p>
+
+      <h4>Clean Sheets</h4>
+      <p>Total: {this.state.teamStatistics.cleanSheet.total}</p>
+
+      <h4>Failed to Score</h4>
+      <p>Total: {this.state.teamStatistics.failedToScore.total}</p>
+
+      <h4>Penalties</h4>
+      <p>Scored: {this.state.teamStatistics.penalty.scored.total}</p>
+      <p>Missed: {this.state.teamStatistics.penalty.missed.total}</p>
+
+      <h4>Lineups</h4>
+      {this.state.teamStatistics.lineups.map((lineup, index) => (
+        <div key={index}>
+          <p>Formation: {lineup.formation}</p>
+          <p>Matches Played: {lineup.played}</p>
+        </div>
+      ))}
+
+      <h4>Cards</h4>
+      <h5>Yellow Cards</h5>
+      {Object.entries(this.state.teamStatistics.cards.yellow).map(([timeRange, stats]) => (
+        <div key={timeRange}>
+          <p>{timeRange}: {stats.total} ({stats.percentage})</p>
+        </div>
+      ))}
+      <h5>Red Cards</h5>
+      {Object.entries(this.state.teamStatistics.cards.red).map(([timeRange, stats]) => (
+        <div key={timeRange}>
+          <p>{timeRange}: {stats.total} ({stats.percentage})</p>
+        </div>
+      ))}
+    </div>
+  </div>
+      ) : this.state.selectedMatchDetails ? (
               <div>
-                <h3>
-                  {this.state.selectedMatchDetails.teams.home.name} vs{" "}
-                  {this.state.selectedMatchDetails.teams.away.name}
-                </h3>
+                <img
+  src={this.state.selectedMatchDetails?.teams?.home?.logo}
+  alt={`${this.state.selectedMatchDetails?.teams?.home?.name} logo`}
+  style={{
+    width: "30px",
+    height: "30px",
+    marginRight: "8px",
+    verticalAlign: "middle",
+  }}
+  onClick={() => {
+    // Pobieramy teamId i leagueId z selectedMatchDetails
+    const teamId = this.state.selectedMatchDetails?.teams?.home?.id;
+    const leagueId = this.state.selectedMatchDetails?.league?.id;
+    console.log("Away Team ID:", teamId);
+    console.log("League ID:", leagueId);
+    // Upewniamy się, że oba parametry są dostępne przed wywołaniem
+    if (teamId && leagueId) {
+      this.handleFetchTeamDetails(teamId, leagueId); // Wywołujemy funkcję z teamId i leagueId
+    }
+  }}
+/>
+  <strong
+ onClick={() => {
+  // Pobieramy teamId i leagueId z selectedMatchDetails
+  const teamId = this.state.selectedMatchDetails?.teams?.home?.id;
+  const leagueId = this.state.selectedMatchDetails?.league?.id;
+  // console.log("Selected Match Details:", this.state.selectedMatchDetails);
+  // console.log("Away Team ID:", teamId);
+  // console.log("League ID:", leagueId);
+  // Upewniamy się, że oba parametry są dostępne przed wywołaniem
+  if (teamId && leagueId) {
+    this.handleFetchTeamDetails(teamId, leagueId); // Wywołujemy funkcję z teamId i leagueId
+  }
+}}
+  > {this.state.selectedMatchDetails.teams.home.name} </strong> vs{" "}
+  <img
+    src={this.state.selectedMatchDetails?.teams?.away?.logo}
+    alt={`${this.state.selectedMatchDetails?.teams?.away?.name} logo`}
+    style={{
+      width: "30px",
+      height: "30px",
+      marginLeft: "8px",
+      marginRight: "8px",
+      verticalAlign: "middle",
+    }}
+
+    onClick={() => {
+      // Pobieramy teamId i leagueId z selectedMatchDetails
+      const teamId = this.state.selectedMatchDetails?.teams?.away?.id;
+      const leagueId = this.state.selectedMatchDetails?.league?.id;
+      console.log("Home Team ID:", teamId);
+      console.log("League ID:", leagueId);
+      // Upewniamy się, że oba parametry są dostępne przed wywołaniem
+      if (teamId && leagueId) {
+        this.handleFetchTeamDetails(teamId, leagueId); // Wywołujemy funkcję z teamId i leagueId
+      }
+    }}
+
+  />
+  <strong
+  
+  onClick={() => {
+    // Pobieramy teamId i leagueId z selectedMatchDetails
+    const teamId = this.state.selectedMatchDetails?.teams?.away?.id;
+    const leagueId = this.state.selectedMatchDetails?.league?.id;
+    console.log("Home Team ID:", teamId);
+    console.log("League ID:", leagueId);
+    // Upewniamy się, że oba parametry są dostępne przed wywołaniem
+    if (teamId && leagueId) {
+      this.handleFetchTeamDetails(teamId, leagueId); // Wywołujemy funkcję z teamId i leagueId
+    }
+  }}
+  >{this.state.selectedMatchDetails.teams.away.name}</strong>
                 <p>
                   <strong>Date:</strong>{" "}
                   {new Date(

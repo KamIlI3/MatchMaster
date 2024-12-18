@@ -14,7 +14,7 @@ export const fetchInternationalCompetitions = async () => {
   
         // Filtrujemy tylko międzynarodowe rozgrywki reprezentacyjne
         const internationalLeagues = data.response.filter((league) =>
-            ['World Cup', 'Euro Championship', 'Confederations Cup', 'FIFA Intercontinental Cup', 'World Cup - Qualification Intercontinental Play-offs',
+            ['World Cup', 'Euro Championship', 'Confederations Cup', 'World Cup - Qualification Intercontinental Play-offs',
             'World Cup - Qualification CONCACAF', 'World Cup - Qualification Europe', 'African Nations Championship', 'Africa Cup of Nations', 'Copa America',
             'UEFA Nations League'].includes(league.league.name)
         );
