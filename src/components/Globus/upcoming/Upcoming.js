@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import styles from "../../css/Upcoming.module.css";
 import { FaStar } from "react-icons/fa";
 
-import { fetchTopLeagues } from "../../api/fetchLeagues";
 import { fetchMatches } from "../../api/fetchMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 import { fetchTeamDetails } from "../../api/fetchTeamDetails";
+
+import loadLeagues from "../services/loadLeagues";
 
 import { useLocation } from "react-router-dom";
 
@@ -22,7 +23,7 @@ class Upcoming extends Component {
   };
 
   componentDidMount() {
-    this.loadLeagues();
+    loadLeagues(this.setState.bind(this));
     this.loadMatches(this.state.selectedDate);
 
     const location = this.props.location;
@@ -33,15 +34,6 @@ class Upcoming extends Component {
     }
   }
 
-  // Ligi
-  loadLeagues = async () => {
-    try {
-      const leagues = await fetchTopLeagues();
-      this.setState({ leagues });
-    } catch (error) {
-      this.setState({ error: "Error fetching leagues" });
-    }
-  };
 
   // Dodawnie do ulubionych
   toggleFavorite = (league) => {

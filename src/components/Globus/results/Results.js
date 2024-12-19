@@ -2,12 +2,15 @@ import React, { Component } from "react";
 import styles from "../../css/Upcoming.module.css";
 import { FaStar } from "react-icons/fa";
 
-import { fetchTopLeagues } from "../../api/fetchLeagues";
-import { fetchMatchResults } from "../../api/fetchMatchResults";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 import { fetchStats } from "../../api/fetchMatchStatistics";
 import { fetchMatchEvents } from "../../api/fetchMatchEvents";
 import { fetchTeamDetails } from "../../api/fetchTeamDetails";
+
+import loadLeagues from "../services/loadLeagues";
+import loadMatchResults from "../services/loadMatchResults";
+import getEventDescription from "../services/getEventDescription";
+
 
 import { useLocation } from "react-router-dom";
 
@@ -27,8 +30,8 @@ class Results extends Component {
   };
 
   componentDidMount() {
-    this.loadLeagues();
-    this.loadMatchResults(this.state.selectedDate);
+    loadLeagues(this.setState.bind(this));
+    loadMatchResults(this.state.selectedDate, null, this.setState.bind(this));
 
     const location = this.props.location;
     const league = location.state?.league;
@@ -37,17 +40,6 @@ class Results extends Component {
       this.handleLeagueSelect(league);
     }
   }
-
-
-  // Ligi
-  loadLeagues = async () => {
-    try {
-      const leagues = await fetchTopLeagues();
-      this.setState({ leagues });
-    } catch (error) {
-      this.setState({ error: "Error fetching leagues" });
-    }
-  };
 
   // Dodawnie do ulubionych
   toggleFavorite = (league) => {
@@ -64,57 +56,26 @@ class Results extends Component {
     });
   };
 
-  // Api wyników
-  loadMatchResults = async (date, leagueId = null) => {
-    try {
-      const matches = await fetchMatchResults(date, leagueId);
-
-      const matchesWithDetails = matches.map((match) => {
-        const homeScore = match.goals.home;
-        const awayScore = match.goals.away;
-
-        return {
-          ...match,
-          result: `${homeScore} - ${awayScore}`,
-        };
-      });
-
-      this.setState({ matches: matchesWithDetails });
-    } catch (error) {
-      this.setState({ error: "Error fetching matches" });
-    }
-  };
 
   //Selekcja meczy
-  handleLeagueSelect = async (league) => {
-    this.setState({ selectedLeague: league }, async () => {
-      try {
-        const matches = await fetchMatchResults(
-          this.state.selectedDate,
-          league.id
-        );
-        this.setState({ matches });
-      } catch (error) {
-        console.error("Error fetching matches for selected league:", error);
-        this.setState({ matches: [], error: "Failed to fetch matches" });
-      }
-    });
-  };
-
-  // Selekcja poprzez date
   handleDateChange = async (event) => {
     const selectedDate = event.target.value;
     this.setState({ selectedDate }, async () => {
-      try {
-        const matches = await fetchMatchResults(
-          this.state.selectedDate,
-          this.state.selectedLeague?.id
-        );
-        this.setState({ matches });
-      } catch (error) {
-        console.error("Error fetching matches for selected date:", error);
-        this.setState({ matches: [], error: "Failed to fetch matches" });
-      }
+      loadMatchResults(
+        this.state.selectedDate,
+        this.state.selectedLeague?.id,
+        this.setState.bind(this)
+      );
+    });
+  };
+  
+  handleLeagueSelect = async (league) => {
+    this.setState({ selectedLeague: league }, async () => {
+      loadMatchResults(
+        this.state.selectedDate,
+        league.id,
+        this.setState.bind(this)
+      );
     });
   };
 
@@ -143,25 +104,6 @@ class Results extends Component {
       activeSection: prevState.activeSection === "stats" ? null : "stats",
     }));
   };
-
-
-  getEventDescription(event) {
-    const eventTypes = {
-      Goal: `Goal (Assisted by ${event.assist ? event.assist.name : "N/A"})`,
-      subst: "Substitution",
-      Card: event.detail ? event.detail : "Card",
-      owngoal: "Own Goal",
-      penalty: "Penalty",
-    };
-
-    if (event.type === "Card" && event.detail === "Yellow Card") {
-      return "Yellow Card";
-    } else if (event.type === "Card" && event.detail === "Red Card") {
-      return "Red Card";
-    }
-
-    return eventTypes[event.type] || "Unknown Event";
-  }
 
   // Szczegóły drużyn
       handleFetchTeamDetails = async (teamId, leagueId) => {
@@ -447,7 +389,7 @@ class Results extends Component {
                       matchEvents.map((event, index) => (
                         <li key={index}>
                           <strong>{event.player.name}</strong> (
-                          {event.team.name}) - {this.getEventDescription(event)}{" "}
+                          {event.team.name}) - {getEventDescription(event)}{" "}
                           at {event.time.elapsed}'
                         </li>
                       ))

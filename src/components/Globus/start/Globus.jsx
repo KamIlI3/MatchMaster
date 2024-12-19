@@ -13,7 +13,8 @@ import { addCountryBorders } from "../helpers/countries";
 import countriesData from "../../countries.geo.json";
 import * as turf from "@turf/turf";
 
-import { fetchTopLeagues } from "../../api/fetchLeagues";
+
+import loadLeagues from "../services/loadLeagues";
 
 import { useNavigate } from "react-router-dom";
 
@@ -25,10 +26,10 @@ class Globus extends Component {
   };
 
   componentDidMount() {
+    loadLeagues(this.setState.bind(this));
     this.initScene();
     this.addListeners();
     this.startAnimation();
-    this.loadLeagues();
   }
 
   //Scena
@@ -175,15 +176,6 @@ class Globus extends Component {
     });
   };
 
-  //Ligi
-  loadLeagues = async () => {
-    try {
-      const leagues = await fetchTopLeagues();
-      this.setState({ leagues });
-    } catch (error) {
-      this.setState({ error: "Error fetching leagues" });
-    }
-  };
   
   //dodawanie do ulubionych
   toggleFavorite = (league) => {
