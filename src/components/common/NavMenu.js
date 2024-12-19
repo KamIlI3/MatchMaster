@@ -24,13 +24,13 @@ function NavMenu() {
           Start
         </Link>
         <Link
-          to="/leagues"
+          to="/upcoming"
           className={styles.NavigationLink}
         >
-          Incoming
+          Upcoming
         </Link>
         <Link
-          to="/teams"
+          to="/results"
           className={styles.NavigationLink}
         >
           Results

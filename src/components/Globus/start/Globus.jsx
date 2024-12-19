@@ -202,7 +202,7 @@ class Globus extends Component {
 
   //Selekcja meczy
   handleLeagueClick = (league) => {
-    this.props.navigate("/leagues", { state: { league } });
+    this.props.navigate("/Upcoming", { state: { league } });
   };
 
   render() {

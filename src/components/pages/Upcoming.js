@@ -2,7 +2,7 @@ import React from 'react';
 // import styles from '../css/Leagues.module.css';
 
 import NavMenu from '../common/NavMenu';
-import Leagues from '../Globus/leagues/Leagues'
+import Upcoming from '../Globus/upcoming/Upcoming'
 
 function LeaguesPage(){
 
@@ -10,7 +10,7 @@ function LeaguesPage(){
 
       <div>
         <NavMenu />
-        <Leagues />
+        <Upcoming />
       </div>
       
     )

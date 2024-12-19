@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styles from "../../css/Leagues.module.css";
+import styles from "../../css/International.module.css";
 
 import { fetchInternationalCompetitions } from "../../api/fetchInternational"; 
 import { fetchInternationalMatches } from "../../api/fetchInternationalMatches";
@@ -7,6 +7,7 @@ import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 import { fetchIntercontinentalMatchResults } from "../../api/fetchIntercontinentalMatchResults";
 import { fetchStats } from "../../api/fetchMatchStatistics";
 import { fetchMatchEvents } from "../../api/fetchMatchEvents";
+import { fetchTeamDetails } from "../../api/fetchTeamDetails";
 
 class International extends Component {
   state = {
@@ -17,6 +18,7 @@ class International extends Component {
     pastMatchesDate: new Date().toISOString().split("T")[0],
     selectedMatchDetails: null,
     selectedMatchStats: null,
+    selectedTeamDetails: null,
     activeSection: null,
     favorites: [],
     matchEvents: [],
@@ -100,14 +102,12 @@ class International extends Component {
   };
 
   handleMatchSelect = async (match) => {
-    console.log("Match selected:", match);  // Add a console log to check if this is being triggered
     this.setState({ isLoading: true, error: null });
     try {
       const matchDetails = await fetchMatchDetails(match.fixture.id);
       const matchStats = await fetchStats(match.fixture.id);
       const matchEvents = await fetchMatchEvents(match.fixture.id);
   
-      console.log("Match details:", matchDetails);  // Log match details to ensure they are being fetched
   
       this.setState({
         selectedMatchDetails: matchDetails,
@@ -145,6 +145,24 @@ class International extends Component {
     return eventTypes[event.type] || "Unknown Event";
   }
 
+  // Szczegóły drużyn
+    handleFetchTeamDetails = async (teamId, leagueId) => {
+      try {
+        const { teamDetails, teamStatistics } = await fetchTeamDetails(
+          teamId,
+          leagueId
+        );
+        this.setState(
+            {
+                selectedTeamDetails: teamDetails,
+                teamStatistics,
+            }
+        );
+      } catch (error) {
+        console.error("Error in handleFetchTeamDetails:", error);
+      }
+    };
+
   render() {
     const { 
       matches, 
@@ -161,8 +179,120 @@ class International extends Component {
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
-          {/* Warunkowe renderowanie, jeśli nie wybrano szczegółów meczu, pokazujemy sekcje meczów */}
-          {selectedMatchDetails ? (
+        <h2>
+              {this.state.selectedTeamDetails
+                ? "Team Details"
+                : this.state.selectedMatchDetails
+                ? "Match Details"
+                : "Matches"}
+            </h2>
+
+            {/* Sprawdzanie, czy mamy dane drużyny w stanie */}
+            {this.state.selectedTeamDetails ? (
+              <div>
+                <h3>{this.state.selectedTeamDetails.name}</h3>
+                <img
+                  src={this.state.selectedTeamDetails.logo}
+                  alt={this.state.selectedTeamDetails.name}
+                />
+
+                <div>
+                  <h4>Form:</h4>
+                  <p>{this.state.teamStatistics.form}</p>
+
+                  <h4>Fixtures:</h4>
+                  <p>
+                    Home Matches Played:{" "}
+                    {this.state.teamStatistics.fixtures.played.home}
+                  </p>
+                  <p>
+                    Away Matches Played:{" "}
+                    {this.state.teamStatistics.fixtures.played.away}
+                  </p>
+                  <p>
+                    Total Matches Played:{" "}
+                    {this.state.teamStatistics.fixtures.played.total}
+                  </p>
+
+                  <h4>Goals</h4>
+                  <p>
+                    Goals Scored:{" "}
+                    {this.state.teamStatistics.goalsFor.total.total}
+                  </p>
+                  <p>
+                    Goals Conceded:{" "}
+                    {this.state.teamStatistics.goalsAgainst.total.total}
+                  </p>
+                  <p>
+                    Average Goals Scored:{" "}
+                    {this.state.teamStatistics.goalsFor.average.total}
+                  </p>
+                  <p>
+                    Average Goals Conceded:{" "}
+                    {this.state.teamStatistics.goalsAgainst.average.total}
+                  </p>
+
+                  <h4>Biggest Streak</h4>
+                  <p>Wins: {this.state.teamStatistics.biggest.streak.wins}</p>
+                  <p>Draws: {this.state.teamStatistics.biggest.streak.draws}</p>
+                  <p>
+                    Losses: {this.state.teamStatistics.biggest.streak.loses}
+                  </p>
+
+                  <h4>Clean Sheets</h4>
+                  <p>Total: {this.state.teamStatistics.cleanSheet.total}</p>
+
+                  <h4>Failed to Score</h4>
+                  <p>Total: {this.state.teamStatistics.failedToScore.total}</p>
+
+                  <h4>Penalties</h4>
+                  <p>
+                    Scored: {this.state.teamStatistics.penalty.scored.total}
+                  </p>
+                  <p>
+                    Missed: {this.state.teamStatistics.penalty.missed.total}
+                  </p>
+
+                  <h4>Lineups</h4>
+                  {this.state.teamStatistics.lineups.map((lineup, index) => (
+                    <div key={index}>
+                      <p>Formation: {lineup.formation}</p>
+                      <p>Matches Played: {lineup.played}</p>
+                    </div>
+                  ))}
+
+                  <h4>Cards</h4>
+                  <h5>Yellow Cards</h5>
+                  {Object.entries(this.state.teamStatistics.cards.yellow).map(
+                    ([timeRange, stats]) => (
+                      <div key={timeRange}>
+                        <p>
+                          {timeRange}: {stats.total} ({stats.percentage})
+                        </p>
+                      </div>
+                    )
+                  )}
+                  <h5>Red Cards</h5>
+                  {Object.entries(this.state.teamStatistics.cards.red).map(
+                    ([timeRange, stats]) => (
+                      <div key={timeRange}>
+                        <p>
+                          {timeRange}: {stats.total} ({stats.percentage})
+                        </p>
+                      </div>
+                    )
+                  )}
+
+                  <button
+                    onClick={() =>
+                      this.setState({ selectedTeamDetails: null })
+                    }
+                  >
+                    Back to Matches
+                  </button>
+                </div>
+              </div>
+            ) : selectedMatchDetails ? (
             <div className={styles.matchesWrapper}>
               <h2>Match Details</h2>
               {/* Wyświetlenie szczegółów meczu */}
@@ -175,14 +305,56 @@ class International extends Component {
                     height: "30px",
                     marginRight: "8px",
                   }}
+
+                  onClick={() => {
+                    const teamId =
+                      this.state.selectedMatchDetails?.teams?.home?.id;
+                    const leagueId =
+                      this.state.selectedMatchDetails?.league?.id;
+                    if (teamId && leagueId) {
+                      this.handleFetchTeamDetails(teamId, leagueId);
+                    }
+                  }}
                 />
-                {selectedMatchDetails.teams.home.name} vs{" "}
+                <strong 
+                onClick={() => {
+                  const teamId =
+                    this.state.selectedMatchDetails?.teams?.home?.id;
+                  const leagueId =
+                    this.state.selectedMatchDetails?.league?.id;
+                  if (teamId && leagueId) {
+                    this.handleFetchTeamDetails(teamId, leagueId);
+                  }
+                }}
+                >
+                  {selectedMatchDetails.teams.home.name} </strong>vs{" "}
                 <img
                   src={selectedMatchDetails.teams.away.logo}
                   alt={`${selectedMatchDetails.teams.away.name} logo`}
                   style={{ width: "30px", height: "30px", marginLeft: "8px" }}
+
+                  onClick={() => {
+                    const teamId =
+                      this.state.selectedMatchDetails?.teams?.away?.id;
+                    const leagueId =
+                      this.state.selectedMatchDetails?.league?.id;
+                    if (teamId && leagueId) {
+                      this.handleFetchTeamDetails(teamId, leagueId);
+                    }
+                  }}
                 />
-                {selectedMatchDetails.teams.away.name}
+                <strong
+                 onClick={() => {
+                  const teamId =
+                    this.state.selectedMatchDetails?.teams?.away?.id;
+                  const leagueId =
+                    this.state.selectedMatchDetails?.league?.id;
+                  if (teamId && leagueId) {
+                    this.handleFetchTeamDetails(teamId, leagueId);
+                  }
+                }}
+                >
+                  {selectedMatchDetails.teams.away.name}</strong>
               </h3>
               <p>
                 <strong>Result:</strong> {selectedMatchDetails.goals.home} -{" "}

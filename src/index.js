@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Start from './components/pages/Start';
-import Leagues from './components/pages/Leagues';
-import Teams from './components/pages/Teams';
+import Upcoming from './components/pages/Upcoming';
+import Results from './components/pages/Results';
 import International from './components/pages/International';
 import Live from './components/pages/Live';
 import SceneManager from './components/SceneManager';
@@ -15,8 +15,8 @@ root.render(
     <BrowserRouter>
           <Routes>
             <Route path="/" element={<Start />} />
-            <Route path="/leagues" element={<Leagues />} />
-            <Route path="/teams" element={<Teams />} />
+            <Route path="/upcoming" element={<Upcoming />} />
+            <Route path="/results" element={<Results />} />
             <Route path="/international" element={<International />} />
             <Route path="/live" element={<Live />} />
           </Routes>
