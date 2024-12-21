@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import styles from "../css/LoginPanel.module.css";
 
-const LoginPanel = ({ onClose }) => {
+const LoginPanel = ({ onClose, onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "", username: "" });
   const [error, setError] = useState("");
@@ -13,23 +13,35 @@ const LoginPanel = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    const dataToSend = isLogin ? { email: formData.email, password: formData.password } : formData;
+
     try {
-      const endpoint = isLogin ? "http://localhost:5000/api/auth/login" : "http://localhost:5000/api/auth/register";
-      const { data } = await axios.post(endpoint, dataToSend);
+      let response;
 
       if (isLogin) {
-        localStorage.setItem("token", data.token);
-        alert("Logged in successfully");
+        // Jeśli użytkownik chce się zalogować
+        response = await axios.post("http://localhost:5000/api/auth/login", formData);
       } else {
-        alert("Registered successfully");
+        // Jeśli użytkownik chce się zarejestrować
+        response = await axios.post("http://localhost:5000/api/auth/register", formData);
+
+        // Po rejestracji automatycznie logujemy użytkownika
+        const loginData = await axios.post("http://localhost:5000/api/auth/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        response = loginData; // Odpowiedź z logowania
       }
 
-      onClose();
+      // Przechowywanie tokenu i username
+      localStorage.setItem("token", response.data.token);
+      onLoginSuccess(response.data.username); // Ustawienie nazwy użytkownika w NavMenu
+
+      alert(isLogin ? "Logged in successfully" : "Registered and logged in successfully");
+
+      onClose(); // Zamknij okno logowania/rejestracji
     } catch (err) {
-      console.error("Error during submit:", err);
-      setError(err.response.data.error || "An error occurred");
+      setError(err.response?.data?.error || "An error occurred");
     }
   };
 

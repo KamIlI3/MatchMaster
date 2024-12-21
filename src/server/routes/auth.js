@@ -36,7 +36,6 @@ router.post('/register', async (req, res) => {
 // Logowanie użytkownika
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login request:", req.body);
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -49,7 +48,8 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, 'your_jwt_secret_key', { expiresIn: '1h' });
-    res.json({ token });
+
+    res.json({ token, username: user.username });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Error logging in user" });
