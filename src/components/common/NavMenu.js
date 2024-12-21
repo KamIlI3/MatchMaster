@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import styles from "../css/NavMenu.module.css";
+import LoginPanel from "./LoginPanel";
 
 import { Link } from "react-router-dom";
 
 function NavMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleLogin = () => setShowLogin(!showLogin);
 
   return (
     <div className={styles.NavMenu}>
@@ -52,9 +53,9 @@ function NavMenu() {
       <div
         className={styles.searchSettings}
       >
-        <button className={styles.OptionButtons}>Search</button>
-        <button className={styles.OptionButtons}>Settings</button>
+         <button onClick={toggleLogin} className={styles.OptionButtons}>Log In</button>
       </div>
+      {showLogin && <LoginPanel onClose={toggleLogin} />}
     </div>
   );
 }
