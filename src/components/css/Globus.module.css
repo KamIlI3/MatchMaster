@@ -88,4 +88,7 @@
 
   .loginPrompt{
     position: absolute;
+    left: 45%;
+    top: 70%;
+    z-index: 1000;
 }

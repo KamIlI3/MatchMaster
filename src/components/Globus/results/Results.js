@@ -27,6 +27,7 @@ class Results extends Component {
     favorites: [],
     error: null,
     matchEvents: [],
+    showLoginPrompt: false,
   };
 
   componentDidMount() {
@@ -44,21 +45,40 @@ class Results extends Component {
     this.setState({ favorites: storedFavorites });
   }
 
-  // Dodawnie do ulubionych
+  // Funkcja do sprawdzenia, czy użytkownik jest zalogowany
+  isLoggedIn = () => {
+    const token = localStorage.getItem("token"); // Sprawdzamy, czy istnieje token w localStorage
+    return token != null; // Jeśli token istnieje, użytkownik jest zalogowany
+  };
+
+  // Funkcja dodająca do ulubionych
   toggleFavorite = (league) => {
+    console.log('Wywołano toggleFavorite dla ligi:', league);
+    if (!this.isLoggedIn()) {
+      // Jeśli użytkownik nie jest zalogowany, pokazujemy komunikat
+      console.log('Nie jesteś zalogowany');
+      this.setState({ showLoginPrompt: true });
+      return;
+    }
+  
     this.setState((prevState) => {
       const isFavorite = prevState.favorites.some(
         (fav) => fav.name === league.name
       );
-
+  
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
-
+  
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-
+  
       return { favorites: updatedFavorites };
     });
+  };
+
+  // Funkcja do zamknięcia komunikatu o logowaniu
+  closeLoginPrompt = () => {
+    this.setState({ showLoginPrompt: false });
   };
 
 
@@ -184,6 +204,13 @@ class Results extends Component {
               )}
             </ul>
           </div>
+
+          {this.state.showLoginPrompt && (
+            <div className={styles.loginPrompt}>
+              <p>You need to be logged in to add favorites.</p>
+              <button onClick={this.closeLoginPrompt}>Close</button>
+            </div>
+          )}
 
           <div className={styles.matchesWrapper}>
           <h2>

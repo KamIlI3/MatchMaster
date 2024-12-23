@@ -69,3 +69,10 @@
     cursor: pointer;
     background-color:  rgba(197, 196, 196, 0.4);
   }
+
+  .loginPrompt{
+    position: absolute;
+    left: 45%;
+    top: 70%;
+    z-index: 1001;
+}

@@ -20,6 +20,7 @@ class Upcoming extends Component {
     selectedTeamDetails: null,
     favorites: [],
     error: null,
+    showLoginPrompt: false,
   };
 
   componentDidMount() {
@@ -38,21 +39,40 @@ class Upcoming extends Component {
   }
 
 
-  // Dodawnie do ulubionych
+  // Funkcja do sprawdzenia, czy użytkownik jest zalogowany
+  isLoggedIn = () => {
+    const token = localStorage.getItem("token"); // Sprawdzamy, czy istnieje token w localStorage
+    return token != null; // Jeśli token istnieje, użytkownik jest zalogowany
+  };
+
+  // Funkcja dodająca do ulubionych
   toggleFavorite = (league) => {
+    console.log('Wywołano toggleFavorite dla ligi:', league);
+    if (!this.isLoggedIn()) {
+      // Jeśli użytkownik nie jest zalogowany, pokazujemy komunikat
+      console.log('Nie jesteś zalogowany');
+      this.setState({ showLoginPrompt: true });
+      return;
+    }
+  
     this.setState((prevState) => {
       const isFavorite = prevState.favorites.some(
         (fav) => fav.name === league.name
       );
-
+  
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
-
+  
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-
+  
       return { favorites: updatedFavorites };
     });
+  };
+
+  // Funkcja do zamknięcia komunikatu o logowaniu
+  closeLoginPrompt = () => {
+    this.setState({ showLoginPrompt: false });
   };
 
   // Api meczów
@@ -160,9 +180,15 @@ class Upcoming extends Component {
                       />
                       {league.name}
                       <FaStar
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          this.toggleFavorite(league);
+                         onClick={(event) => {
+                          event.stopPropagation();  // Zatrzymuje propagację, aby kliknięcie nie wpłynęło na inne elementy
+                          if (!this.isLoggedIn()) {
+                            console.log('Użytkownik nie jest zalogowany');
+                            this.setState({ showLoginPrompt: true });  // Pokazuje komunikat o konieczności logowania
+                          } else {
+                            console.log('Użytkownik zalogowany');
+                            this.toggleFavorite(league); // Jeśli użytkownik jest zalogowany, dodajemy do ulubionych
+                          }
                         }}
                         style={{
                           marginLeft: "8px",
@@ -178,6 +204,13 @@ class Upcoming extends Component {
               )}
             </ul>
           </div>
+
+          {this.state.showLoginPrompt && (
+            <div className={styles.loginPrompt}>
+              <p>You need to be logged in to add favorites.</p>
+              <button onClick={this.closeLoginPrompt}>Close</button>
+            </div>
+          )}
 
           <div className={styles.matchesWrapper}>
             <h2>

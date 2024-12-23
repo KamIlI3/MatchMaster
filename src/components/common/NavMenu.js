@@ -27,8 +27,9 @@ function NavMenu() {
 
   // Funkcja wylogowania – resetuje nazwę użytkownika
   const handleLogout = () => {
-    setUserName(null);
-    localStorage.removeItem("username"); // Usuwamy nazwę z localStorage
+    setUserName(null); // Resetowanie stanu lokalnego
+    localStorage.removeItem("username"); // Usuwanie nazwy użytkownika z localStorage
+    localStorage.removeItem("token"); // Usuwanie tokenu z localStorage (jeśli używasz tokenu)
   };
 
   return (
@@ -38,21 +39,11 @@ function NavMenu() {
       </button>
 
       <nav className={`${styles.Menu} ${isOpen ? styles.MenuOpen : ""}`}>
-        <Link to="/" className={styles.NavigationLink}>
-          Start
-        </Link>
-        <Link to="/upcoming" className={styles.NavigationLink}>
-          Upcoming
-        </Link>
-        <Link to="/results" className={styles.NavigationLink}>
-          Results
-        </Link>
-        <Link to="/international" className={styles.NavigationLink}>
-          International
-        </Link>
-        <Link to="/live" className={styles.NavigationLink}>
-          Live
-        </Link>
+        <Link to="/" className={styles.NavigationLink}>Start</Link>
+        <Link to="/upcoming" className={styles.NavigationLink}>Upcoming</Link>
+        <Link to="/results" className={styles.NavigationLink}>Results</Link>
+        <Link to="/international" className={styles.NavigationLink}>International</Link>
+        <Link to="/live" className={styles.NavigationLink}>Live</Link>
       </nav>
 
       <div className={styles.searchSettings}>
