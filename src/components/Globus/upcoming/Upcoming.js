@@ -32,6 +32,9 @@ class Upcoming extends Component {
     if (league) {
       this.handleLeagueSelect(league);
     }
+
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    this.setState({ favorites: storedFavorites });
   }
 
 
@@ -45,6 +48,8 @@ class Upcoming extends Component {
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
+
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
 
       return { favorites: updatedFavorites };
     });
@@ -141,7 +146,7 @@ class Upcoming extends Component {
                   return (
                     <li
                       key={league.id}
-                      onClick={() => this.handleLeagueSelect(league)}
+                      onClick={() => this.handleLeagueClick(league)}
                     >
                       <img
                         src={league.logo}

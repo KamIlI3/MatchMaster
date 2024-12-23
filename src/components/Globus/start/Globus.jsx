@@ -23,6 +23,7 @@ class Globus extends Component {
     leagues: [],
     favorites: [],
     error: null,
+    showLoginPrompt: false,
   };
 
   componentDidMount() {
@@ -31,15 +32,8 @@ class Globus extends Component {
     this.addListeners();
     this.startAnimation();
 
-    if (this.isUserLoggedIn()) {
-      const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
-      this.setState({ favorites: storedFavorites });
-    }
-  }
-
-  isUserLoggedIn = () => {
-    // Zwraca true, jeśli użytkownik jest zalogowany, np. sprawdzając istnienie tokenu w localStorage
-    return localStorage.getItem('userToken') !== null;
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    this.setState({ favorites: storedFavorites });
   }
 
   //Scena
@@ -198,12 +192,13 @@ class Globus extends Component {
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
 
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-        
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+
       return { favorites: updatedFavorites };
     });
   };
-  
+
+
 
   //Selekcja meczy
   handleLeagueClick = (league) => {

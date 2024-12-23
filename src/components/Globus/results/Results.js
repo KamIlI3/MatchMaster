@@ -39,6 +39,9 @@ class Results extends Component {
     if (league) {
       this.handleLeagueSelect(league);
     }
+
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    this.setState({ favorites: storedFavorites });
   }
 
   // Dodawnie do ulubionych
@@ -51,6 +54,8 @@ class Results extends Component {
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
+
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
 
       return { favorites: updatedFavorites };
     });

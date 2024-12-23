@@ -86,3 +86,6 @@
     font-family: cursive;
   }
 
+  .loginPrompt{
+    position: absolute;
+}
