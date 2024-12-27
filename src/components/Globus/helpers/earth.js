@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import earthmap from '../../../assets/images/earthmap4k.jpg';
 import earthbump from '../../../assets/images/earthbump4k.jpg';
 import earthspec from '../../../assets/images/earthspec4k.jpg';
-import hexPattern from '../../../assets/images/balltexture.jpeg'; 
+import hexPattern from '../../../assets/images/hexPattern.jpeg'; 
 
 export const createEarth = () => {
 

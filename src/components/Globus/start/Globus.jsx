@@ -13,7 +13,6 @@ import { addCountryBorders } from "../helpers/countries";
 import countriesData from "../../countries.geo.json";
 import * as turf from "@turf/turf";
 
-
 import loadLeagues from "../services/loadLeagues";
 
 import { useNavigate } from "react-router-dom";
@@ -230,6 +229,8 @@ class Globus extends Component {
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
+        
+
           <div className={styles.leaguesList}>
             {error && <p>{error}</p>}
             <h2>Leagues</h2>
@@ -267,10 +268,6 @@ class Globus extends Component {
                           this.toggleFavorite(league); // Jeśli użytkownik jest zalogowany, dodajemy do ulubionych
                         }
                       }}
-                        // onClick={(event) => {
-                        //   event.stopPropagation();
-                        //   this.toggleFavorite(league);
-                        // }}
                         style={{
                           marginleft: "105%",
                           cursor: "pointer",
@@ -292,6 +289,7 @@ class Globus extends Component {
               <button onClick={this.closeLoginPrompt}>Close</button>
             </div>
           )}
+
 
           <div className={styles.Favorites}>
             <h2>Favorites</h2>

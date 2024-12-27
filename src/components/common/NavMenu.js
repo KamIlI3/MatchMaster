@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import styles from "../css/NavMenu.module.css";
 import LoginPanel from "./LoginPanel";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHouse } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
+import { faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faHourglass2 } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function NavMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [userName, setUserName] = useState(null); // Stan dla nazwy użytkownika
+  const [userName, setUserName] = useState(null); 
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleLogin = () => setShowLogin(!showLogin);
@@ -39,22 +47,29 @@ function NavMenu() {
       </button>
 
       <nav className={`${styles.Menu} ${isOpen ? styles.MenuOpen : ""}`}>
-        <Link to="/" className={styles.NavigationLink}>Start</Link>
-        <Link to="/upcoming" className={styles.NavigationLink}>Upcoming</Link>
-        <Link to="/results" className={styles.NavigationLink}>Results</Link>
-        <Link to="/international" className={styles.NavigationLink}>International</Link>
-        <Link to="/live" className={styles.NavigationLink}>Live</Link>
+        <NavLink to="/" className={({ isActive }) =>
+            isActive ? `${styles.NavigationLink} ${styles.ActiveLink}` : styles.NavigationLink
+          }
+          end><FontAwesomeIcon icon={faHouse} /> Start</NavLink>
+        <NavLink to="/upcoming" className={({ isActive }) =>
+            isActive ? `${styles.NavigationLink} ${styles.ActiveLink}` : styles.NavigationLink
+          }><FontAwesomeIcon icon={faCalendarDays} /> Upcoming</NavLink>
+        <NavLink to="/results" className={({ isActive }) =>
+            isActive ? `${styles.NavigationLink} ${styles.ActiveLink}` : styles.NavigationLink
+          }><FontAwesomeIcon icon={faTrophy} /> Results</NavLink>
+        <NavLink to="/international" className={({ isActive }) =>
+            isActive ? `${styles.NavigationLink} ${styles.ActiveLink}` : styles.NavigationLink
+          }><FontAwesomeIcon icon={faGlobe} /> International</NavLink>
+        <NavLink to="/live" className={({ isActive }) =>
+            isActive ? `${styles.NavigationLink} ${styles.ActiveLink}` : styles.NavigationLink
+          }><FontAwesomeIcon icon={faHourglass2} /> Live</NavLink>
       </nav>
 
-      <div className={styles.searchSettings}>
+      <div className={styles.logIn}>
         {userName ? (
-          <button onClick={handleLogout} className={styles.OptionButtons}>
-            {userName} (Logout)
-          </button>
+          <button onClick={handleLogout} className={styles.activeLogInButton}>{userName} (Logout)</button>
         ) : (
-          <button onClick={toggleLogin} className={styles.OptionButtons}>
-            Log In
-          </button>
+          <button onClick={toggleLogin} className={styles.logInButton}><FontAwesomeIcon icon={faUser} /> Log In</button>
         )}
       </div>
 

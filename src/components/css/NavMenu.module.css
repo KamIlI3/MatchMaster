@@ -1,32 +1,27 @@
 .NavMenu {
   position: absolute;
-  z-index: 1000;
+  z-index: 1;
   display: flex;
-  flex-direction: row;
-  background-color: transparent;
-  margin: 2% 0 0 0;
-  padding: 0;
   width: 100%;
   height: 10vh;
-  background-color: transparent;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1%;
 }
 .Menu {
   position: relative;
-  width: 70%;
-  height: 100%;
+  width: 50%;
   background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  font-size: 180%;
-  font-family: cursive;
-  padding-left: 10%;
-  padding-right: 20%;
+  font-size: 2.2rem;
+  font-family: poppins;
 }
 .NavigationLink {
   color: aliceblue;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 400;
   transition: color 0.3s;
 }
 .NavigationLink:hover,
@@ -35,26 +30,39 @@
   box-shadow: 0px 3px rgb(81, 190, 218);
 }
 
-.searchSettings {
-  background-color: transparent;
-  width: 30%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.logIn {
+  position: absolute;
+  right: 2%;
 }
 
-.OptionButtons {
-  border: solid 1px aliceblue;
+.activeLogInButton{
+  color: rgb(81, 190, 218);
+  border: solid 2px rgb(81, 190, 218);
+  border: solid 2px aliceblue;
   border-radius: 15px;
-  height: 35px;
+  height: 40px;
+  width: 70px;
   margin: 2%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: transparent;
 }
-.OptionButtons:hover {
+
+.logInButton {
+  border: solid 2px aliceblue;
+  color: aliceblue;
+  border-radius: 15px;
+  height: 40px;
+  width: 70px;
+  margin: 2%;
+  font-size: 0.7rem;
+  background-color: transparent;
+}
+.logInButton:hover,
+.activeLogInButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgb(81, 190, 218);
-  border: solid 1px aliceblue;
+  border: solid 2px rgb(81, 190, 218);
+  cursor: pointer;
 }
 
 .hamburger {
@@ -73,39 +81,38 @@
     top: 0;
     left: 0;
     height: 100vh;
-    width: 150px;
+    width: 200px;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.6);
     padding: 20px;
     transform: translateX(-100%);
-    z-index: 1000;
+    z-index: 1;
+    font-size: 1.5rem;
+    justify-content: start;
+  }
+  .NavigationLink{
+    height: 30px;
+    margin: 5% 0 5% 0;
   }
   .Menu.MenuOpen {
     transform: translateX(0);
   }
   .hamburger {
-    display: block;
     font-size: 24px;
     color: #fff;
     cursor: pointer;
-    border: none;
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    z-index: 1;
+    background-color: transparent;
   }
 
-  .searchSettings {
+  .logIn {
     display: flex;
-    align-items: center;
     justify-content: center;
     width: 100%;
   }
 }
 
-@media (max-width: 950px) {
-  .hamburger {
-    display: block;
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 24px;
-    z-index: 1010;
-  }
-}

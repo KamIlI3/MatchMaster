@@ -52,7 +52,7 @@ const createPolygonBorder = (ring) => {
     });
   } 
 
-  const borderMaterial = new THREE.LineBasicMaterial({ color: 0x00ff99, linewidth: 2 });
+  const borderMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
   const borderGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
   return new THREE.Line(borderGeometry, borderMaterial);
