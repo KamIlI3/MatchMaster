@@ -47,11 +47,11 @@ const LoginPanel = ({ onClose, onLoginSuccess }) => {
 
   return (
     <div className={styles.overlay}>
+      <button onClick={onClose} className={styles.close}>✕</button>
       <div className={styles.panel}>
-        <button onClick={onClose} className={styles.close}>✕</button>
         <h2>{isLogin ? "Log In" : "Register"}</h2>
         {error && <p className={styles.error}>{error}</p>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.formLogin}>
           {!isLogin && (
             <input
               type="text"
@@ -68,14 +68,17 @@ const LoginPanel = ({ onClose, onLoginSuccess }) => {
             value={formData.email}
             onChange={handleChange}
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <button type="submit">{isLogin ? "Log In" : "Register"}</button>
+            <div className={styles.submitDiv}>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button type="submit">{isLogin ? "Log In" : "Register"}</button>
+            </div>
+          
         </form>
         <button onClick={() => setIsLogin(!isLogin)}>
           {isLogin ? "Don't have an account? Register" : "Already have an account? Log In"}
