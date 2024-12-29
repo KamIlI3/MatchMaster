@@ -6,6 +6,9 @@ import { fetchMatches } from "../../api/fetchMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 import { fetchTeamDetails } from "../../api/fetchTeamDetails";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faReplyAll } from "@fortawesome/free-solid-svg-icons";
+
 import loadLeagues from "../services/loadLeagues";
 
 import { useLocation } from "react-router-dom";
@@ -38,7 +41,6 @@ class Upcoming extends Component {
     this.setState({ favorites: storedFavorites });
   }
 
-
   // Funkcja do sprawdzenia, czy użytkownik jest zalogowany
   isLoggedIn = () => {
     const token = localStorage.getItem("token"); // Sprawdzamy, czy istnieje token w localStorage
@@ -47,25 +49,25 @@ class Upcoming extends Component {
 
   // Funkcja dodająca do ulubionych
   toggleFavorite = (league) => {
-    console.log('Wywołano toggleFavorite dla ligi:', league);
+    console.log("Wywołano toggleFavorite dla ligi:", league);
     if (!this.isLoggedIn()) {
       // Jeśli użytkownik nie jest zalogowany, pokazujemy komunikat
-      console.log('Nie jesteś zalogowany');
+      console.log("Nie jesteś zalogowany");
       this.setState({ showLoginPrompt: true });
       return;
     }
-  
+
     this.setState((prevState) => {
       const isFavorite = prevState.favorites.some(
         (fav) => fav.name === league.name
       );
-  
+
       const updatedFavorites = isFavorite
         ? prevState.favorites.filter((fav) => fav.name !== league.name)
         : [...prevState.favorites, league];
-  
+
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  
+
       return { favorites: updatedFavorites };
     });
   };
@@ -134,14 +136,10 @@ class Upcoming extends Component {
         leagueId
       );
 
-
-      this.setState(
-        {
-          selectedTeamDetails: teamDetails,
-          teamStatistics,
-        
-        }
-      );
+      this.setState({
+        selectedTeamDetails: teamDetails,
+        teamStatistics,
+      });
     } catch (error) {
       console.error("Error in handleFetchTeamDetails:", error);
     }
@@ -166,7 +164,7 @@ class Upcoming extends Component {
                   return (
                     <li
                       key={league.id}
-                      onClick={() => this.handleLeagueClick(league)}
+                      onClick={() => this.handleLeagueSelect(league)}
                     >
                       <img
                         src={league.logo}
@@ -180,20 +178,20 @@ class Upcoming extends Component {
                       />
                       {league.name}
                       <FaStar
-                         onClick={(event) => {
-                          event.stopPropagation();  // Zatrzymuje propagację, aby kliknięcie nie wpłynęło na inne elementy
+                        onClick={(event) => {
+                          event.stopPropagation(); // Zatrzymuje propagację, aby kliknięcie nie wpłynęło na inne elementy
                           if (!this.isLoggedIn()) {
-                            console.log('Użytkownik nie jest zalogowany');
-                            this.setState({ showLoginPrompt: true });  // Pokazuje komunikat o konieczności logowania
+                            console.log("Użytkownik nie jest zalogowany");
+                            this.setState({ showLoginPrompt: true }); // Pokazuje komunikat o konieczności logowania
                           } else {
-                            console.log('Użytkownik zalogowany');
+                            console.log("Użytkownik zalogowany");
                             this.toggleFavorite(league); // Jeśli użytkownik jest zalogowany, dodajemy do ulubionych
                           }
                         }}
                         style={{
                           marginLeft: "8px",
                           cursor: "pointer",
-                          color: isFavorite ? "gold" : "gray",
+                          color: isFavorite ? "rgb(81, 190, 218)" : "gray",
                         }}
                       />
                     </li>
@@ -223,111 +221,158 @@ class Upcoming extends Component {
 
             {/* Sprawdzanie, czy mamy dane drużyny w stanie */}
             {this.state.selectedTeamDetails ? (
-              <div>
-                <h3>{this.state.selectedTeamDetails.name}</h3>
+              <div className={styles.matchesWrapperContent}>
+                <span className={styles.teamNameAndLogo}>
+                <h3 className={styles.teamName}>
+                  {this.state.selectedTeamDetails.name}
+                </h3>
                 <img
                   src={this.state.selectedTeamDetails.logo}
                   alt={this.state.selectedTeamDetails.name}
                 />
+                </span>
 
                 <div>
-                  <h4>Form:</h4>
-                  <p>{this.state.teamStatistics.form}</p>
-
-                  <h4>Fixtures:</h4>
+                  <h3>Form:</h3>
                   <p>
-                    Home Matches Played:{" "}
+                   <b> {this.state.teamStatistics.form
+                      .split("")
+                      .map((letter, index) => {
+                        let color;
+                        switch (letter) {
+                          case "W":
+                            color = "green";
+                            break;
+                          case "L":
+                            color = "red";
+                            break;
+                          case "D":
+                            color = "gray";
+                            break;
+                          default:
+                            color = "black"; // Domyślny kolor dla innych znaków
+                        }
+
+                        return (
+                          <span
+                            key={index}
+                            style={{ color: color, marginRight: "5px" }}
+                          >
+                            {letter}
+                          </span>
+                        );
+                      })}
+                      </b>
+                  </p>
+
+                  <h3>Fixtures:</h3>
+                  <p>
+                    <b>Total Matches Played:</b>{" "}
+                    {this.state.teamStatistics.fixtures.played.total}
+                  </p>
+                  <p>
+                  <b>Home Matches Played:</b>{" "}
                     {this.state.teamStatistics.fixtures.played.home}
                   </p>
                   <p>
-                    Away Matches Played:{" "}
+                  <b>Away Matches Played:</b>{" "}
                     {this.state.teamStatistics.fixtures.played.away}
                   </p>
-                  <p>
-                    Total Matches Played:{" "}
-                    {this.state.teamStatistics.fixtures.played.total}
-                  </p>
 
-                  <h4>Goals</h4>
+                  <h3>Goals</h3>
                   <p>
-                    Goals Scored:{" "}
+                  <b>Goals Scored:</b>{" "}
                     {this.state.teamStatistics.goalsFor.total.total}
                   </p>
                   <p>
-                    Goals Conceded:{" "}
+                  <b>Goals Conceded:</b>{" "}
                     {this.state.teamStatistics.goalsAgainst.total.total}
                   </p>
                   <p>
-                    Average Goals Scored:{" "}
+                    <b>Average Goals Scored:</b>{" "}
                     {this.state.teamStatistics.goalsFor.average.total}
                   </p>
                   <p>
-                    Average Goals Conceded:{" "}
+                    <b>Average Goals Conceded:</b>{" "}
                     {this.state.teamStatistics.goalsAgainst.average.total}
                   </p>
 
-                  <h4>Biggest Streak</h4>
-                  <p>Wins: {this.state.teamStatistics.biggest.streak.wins}</p>
-                  <p>Draws: {this.state.teamStatistics.biggest.streak.draws}</p>
+                  <h3>Biggest Streak</h3>
+                  <p><b>Wins: </b>{this.state.teamStatistics.biggest.streak.wins}</p>
+                  <p><b>Draws: </b>{this.state.teamStatistics.biggest.streak.draws}</p>
                   <p>
-                    Losses: {this.state.teamStatistics.biggest.streak.loses}
+                  <b>Losses:</b> {this.state.teamStatistics.biggest.streak.loses}
                   </p>
 
-                  <h4>Clean Sheets</h4>
-                  <p>Total: {this.state.teamStatistics.cleanSheet.total}</p>
+                  <h3>Clean Sheets</h3>
+                  <p><b>Total:</b> {this.state.teamStatistics.cleanSheet.total}</p>
 
-                  <h4>Failed to Score</h4>
-                  <p>Total: {this.state.teamStatistics.failedToScore.total}</p>
+                  <h3>Failed to Score</h3>
+                  <p><b>Total:</b> {this.state.teamStatistics.failedToScore.total}</p>
 
-                  <h4>Penalties</h4>
+                  <h3>Penalties</h3>
                   <p>
-                    Scored: {this.state.teamStatistics.penalty.scored.total}
+                  <b>Scored:</b> {this.state.teamStatistics.penalty.scored.total}
                   </p>
                   <p>
-                    Missed: {this.state.teamStatistics.penalty.missed.total}
+                  <b>Missed:</b> {this.state.teamStatistics.penalty.missed.total}
                   </p>
 
-                  <h4>Lineups</h4>
+                  <h3>Lineups</h3>
                   {this.state.teamStatistics.lineups.map((lineup, index) => (
                     <div key={index}>
-                      <p>Formation: {lineup.formation}</p>
-                      <p>Matches Played: {lineup.played}</p>
+                      <p><b>Formation:</b> {lineup.formation}</p>
+                      <p><b>Matches Played:</b> {lineup.played}</p>
                     </div>
                   ))}
 
-                  <h4>Cards</h4>
-                  <h5>Yellow Cards</h5>
+                  <h3>Cards</h3>
+                  <h4 style={{ color: 'yellow' }}>Yellow Cards</h4>
                   {Object.entries(this.state.teamStatistics.cards.yellow).map(
                     ([timeRange, stats]) => (
                       <div key={timeRange}>
                         <p>
-                          {timeRange}: {stats.total} ({stats.percentage})
+                        <b>{timeRange} min. :</b> {stats.total} ({stats.percentage})
                         </p>
                       </div>
                     )
                   )}
-                  <h5>Red Cards</h5>
+                  <h4 style={{ color: 'red' }}>Red Cards</h4>
                   {Object.entries(this.state.teamStatistics.cards.red).map(
                     ([timeRange, stats]) => (
                       <div key={timeRange}>
                         <p>
-                          {timeRange}: {stats.total} ({stats.percentage})
+                        <b>{timeRange} min. :</b> {stats.total} ({stats.percentage})
                         </p>
                       </div>
                     )
                   )}
 
                   <button
-                    onClick={() =>
-                      this.setState({ selectedTeamDetails: null })
-                    }
+                    onClick={() => this.setState({ selectedTeamDetails: null })}
                   >
+                    <FontAwesomeIcon icon={faReplyAll} />
                     Back to Matches
                   </button>
                 </div>
               </div>
             ) : this.state.selectedMatchDetails ? (
-              <div>
+              <div className={styles.matchesWrapperContent}>
+                <strong
+                  className={styles.teamName}
+                  onClick={() => {
+                    const teamId =
+                      this.state.selectedMatchDetails?.teams?.home?.id;
+                    const leagueId =
+                      this.state.selectedMatchDetails?.league?.id;
+                    if (teamId && leagueId) {
+                      this.handleFetchTeamDetails(teamId, leagueId);
+                    }
+                  }}
+                >
+                  {" "}
+                  {this.state.selectedMatchDetails.teams.home.name}{" "}
+                </strong>
                 <img
                   src={this.state.selectedMatchDetails?.teams?.home?.logo}
                   alt={`${this.state.selectedMatchDetails?.teams?.home?.name} logo`}
@@ -346,21 +391,7 @@ class Upcoming extends Component {
                       this.handleFetchTeamDetails(teamId, leagueId);
                     }
                   }}
-                />
-                <strong
-                  onClick={() => {
-                    const teamId =
-                      this.state.selectedMatchDetails?.teams?.home?.id;
-                    const leagueId =
-                      this.state.selectedMatchDetails?.league?.id;
-                    if (teamId && leagueId) {
-                      this.handleFetchTeamDetails(teamId, leagueId);
-                    }
-                  }}
-                >
-                  {" "}
-                  {this.state.selectedMatchDetails.teams.home.name}{" "}
-                </strong>{" "}
+                />{" "}
                 vs{" "}
                 <img
                   src={this.state.selectedMatchDetails?.teams?.away?.logo}
@@ -383,6 +414,7 @@ class Upcoming extends Component {
                   }}
                 />
                 <strong
+                  className={styles.teamName}
                   onClick={() => {
                     const teamId =
                       this.state.selectedMatchDetails?.teams?.away?.id;
@@ -417,6 +449,7 @@ class Upcoming extends Component {
                 <button
                   onClick={() => this.setState({ selectedMatchDetails: null })}
                 >
+                  <FontAwesomeIcon icon={faReplyAll} />
                   Back to Matches
                 </button>
               </div>
@@ -424,7 +457,9 @@ class Upcoming extends Component {
               <>
                 {this.state.selectedLeague && (
                   <div>
-                    <h3>{this.state.selectedLeague.name}</h3>
+                    <h3 className={styles.teamName}>
+                      {this.state.selectedLeague.name}
+                    </h3>
                   </div>
                 )}
                 <label>
@@ -442,6 +477,7 @@ class Upcoming extends Component {
                         key={match.fixture.id}
                         onClick={() => this.handleMatchSelect(match)}
                       >
+                        <strong>{match.teams.home.name}</strong>
                         <img
                           src={match.teams.home.logo}
                           alt={`${match.teams.home.name} logo`}
@@ -451,7 +487,12 @@ class Upcoming extends Component {
                             marginRight: "5px",
                           }}
                         />
-                        <strong>{match.teams.home.name}</strong> vs{" "}
+                        <p>
+                          {new Date(match.fixture.date).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>{" "}
                         <img
                           src={match.teams.away.logo}
                           alt={`${match.teams.away.name} logo`}
@@ -462,7 +503,6 @@ class Upcoming extends Component {
                           }}
                         />
                         <strong>{match.teams.away.name}</strong>
-                        <p>{new Date(match.fixture.date).toLocaleString()}</p>
                       </li>
                     ))
                   ) : (
