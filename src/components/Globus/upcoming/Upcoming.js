@@ -221,6 +221,9 @@ class Upcoming extends Component {
 
             {/* Sprawdzanie, czy mamy dane drużyny w stanie */}
             {this.state.selectedTeamDetails ? (
+               this.state.error ? (
+                <p style={{ color: "red" }}>{this.state.error}</p>
+              ) : (
               <div className={styles.matchesWrapperContent}>
                 <span className={styles.teamNameAndLogo}>
                 <h3 className={styles.teamName}>
@@ -234,34 +237,32 @@ class Upcoming extends Component {
 
                 <div>
                   <h3>Form:</h3>
-                  <p>
-                   <b> {this.state.teamStatistics.form
-                      .split("")
-                      .map((letter, index) => {
-                        let color;
-                        switch (letter) {
-                          case "W":
-                            color = "green";
-                            break;
-                          case "L":
-                            color = "red";
-                            break;
-                          case "D":
-                            color = "gray";
-                            break;
-                          default:
-                            color = "black"; // Domyślny kolor dla innych znaków
-                        }
+                    <p>
+                      <b>
+                        {this.state.teamStatistics.form
+                          ? this.state.teamStatistics.form.split("").map((letter, index) => {
+                              let color;
+                              switch (letter) {
+                                case "W":
+                                  color = "green";
+                                  break;
+                                case "L":
+                                  color = "red";
+                                  break;
+                                case "D":
+                                  color = "gray";
+                                  break;
+                                default:
+                                  color = "black"; // Domyślny kolor dla innych znaków
+                              }
 
-                        return (
-                          <span
-                            key={index}
-                            style={{ color: color, marginRight: "5px" }}
-                          >
-                            {letter}
-                          </span>
-                        );
-                      })}
+                              return (
+                                <span key={index} style={{ color: color, marginRight: "5px" }}>
+                                  {letter}
+                                </span>
+                              );
+                            })
+                          : "No data available"}
                       </b>
                   </p>
 
@@ -356,6 +357,7 @@ class Upcoming extends Component {
                   </button>
                 </div>
               </div>
+              )
             ) : this.state.selectedMatchDetails ? (
               <div className={styles.matchesWrapperContent}>
                 <strong

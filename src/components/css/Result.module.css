@@ -1,0 +1,201 @@
+.leaguesList {
+    width: 300px; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    text-align: center;
+    font-family: poppins;
+    color: aliceblue;
+    padding: 10px;
+    overflow: hidden;
+    top: 15%;
+    left: 25%;
+    border-radius: 15px;
+    max-height: 70vh; 
+    position: absolute;
+    overflow-y: auto;
+    z-index: 2;
+    }
+  
+    .matchesWrapper{
+      width: 600px; 
+      background-color: rgba(0, 0, 0, 0.4); 
+      color: aliceblue;
+      text-align: center;
+      font-family: poppins;
+      padding: 10px;
+      top: 15%;
+      right: 25%;
+      border-radius: 15px;
+      max-height: 70vh; 
+      min-height: 70vh;
+      position: absolute;
+      overflow: hidden;
+      overflow-y: auto;
+      z-index: 2;
+    }
+    h2{
+      font-size: 200%;
+      background: linear-gradient(to right, aliceblue, rgb(81, 190, 218));
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+    }
+    
+  
+    .matchesWrapperContent{
+      text-align: start;
+    }
+  
+    .teamName{
+      font-size: 150%;
+      cursor: pointer;
+    }
+  
+    .leaguesList li{
+      height: 50px;
+      width: 200px;
+      margin-bottom: 5px;
+      border-radius: 15px;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 5px;
+      background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(197, 196, 196, 0.25)); 
+      font-family: poppins;
+    }
+  
+    .leaguesList li:hover{
+      cursor: pointer;
+      background-color:  rgba(197, 196, 196, 0.4);
+    }
+    
+    .leaguesList::-webkit-scrollbar,
+    .matchesWrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .leaguesList::-webkit-scrollbar-thumb,
+    .matchesWrapper::-webkit-scrollbar-thumb {
+      background-color: rgb(81, 190, 218); 
+      border-radius: 15px; 
+      border: 0px solid transparent;
+    }
+    
+    .leaguesList::-webkit-scrollbar-track,
+    .matchesWrapper::-webkit-scrollbar-track {
+      background-color: transparent; 
+    }
+  
+  
+  
+    .matchesWrapper li{
+      border: 1px solid black;
+      height: 50px;
+      width: 250px;
+      margin-bottom: 5px;
+      border-radius: 15px;
+      position: relative;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      padding-left: 5px;
+      background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(197, 196, 196, 0.25)); 
+      font-family: poppins;
+    }
+  
+    .matchesWrapper li:hover{
+      cursor: pointer;
+      background-color:  rgba(197, 196, 196, 0.4);
+    }
+  
+    .matchesWrapper input{
+      cursor: pointer;
+      height: 20px;
+      font-family: cursive;
+      font-weight: 600;
+      background: linear-gradient(to right, rgba(81, 190, 218, 0), rgba(81, 190, 218, 0.8)); 
+      border: none;
+      border-radius: 15px;
+      color: aliceblue;
+      align-self: center;
+    }
+  
+    .matchesWrapper img{
+      margin: 0 5px 0 5px;
+    }
+  
+    .matchesWrapper button{
+      border: solid 2px aliceblue;
+      color: aliceblue;
+      border-radius: 15px;
+      height: 40px;
+      width: 100px;
+      margin: 2%;
+      font-size: 0.7rem;
+      background-color: transparent;
+      align-self: center;
+    }
+    .matchesWrapper button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: solid 2px rgb(81, 190, 218);
+      cursor: pointer;
+    }
+  
+    .loginPrompt{
+      position: absolute;
+      left: 45%;
+      top: 70%;
+      z-index: 1;
+  }
+  
+  h3{
+    display: inline;
+    font-size: 150%;
+    background: linear-gradient(to right, aliceblue, gold);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    font-family: poppins;
+  }
+  
+  .teamNameAndLogo{
+    display: flex;
+    flex-direction: column;
+  }
+  .teamNameAndLogo img{
+    width: 200px;
+    height: 200px;
+  }
+
+
+  .yellow-card {
+    color: yellow;
+    font-weight: bold;
+  }
+  
+  .red-card {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .goal {
+    color: rgb(0, 199, 0);
+    font-weight: bold;
+  }
+  
+  
+  .own-goal {
+    color: orange;
+    font-weight: bold;
+  }
+  
+  .penalty {
+    color: blue;
+    font-weight: bold;
+  }
+  
+
+.matchEvents{
+    display: flex;
+}
+.matchEvents li{
+    width: 230px;
+}
