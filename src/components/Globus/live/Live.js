@@ -9,12 +9,15 @@ import { fetchLiveMatches } from "../../api/fetchLiveMatches";
 import { fetchMatchDetails } from "../../api/fetchMatchDetails";
 import { fetchStats } from "../../api/fetchMatchStatistics";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faReplyAll } from "@fortawesome/free-solid-svg-icons";
+
 class Live extends Component {
   state = {
-    liveMatches: [], 
+    liveMatches: [],
     favorites: [],
     selectedMatch: null,
-    error: null, 
+    error: null,
   };
 
   componentDidMount() {
@@ -64,7 +67,7 @@ class Live extends Component {
       const selectedMatch = await fetchMatchDetails(fixtureId);
       // Pobierz statystyki meczu
       const stats = await fetchStats(fixtureId);
-  
+
       this.setState({
         selectedMatch: { ...selectedMatch, stats },
       });
@@ -84,63 +87,93 @@ class Live extends Component {
             {selectedMatch ? (
               <div className={styles.matchDetails}>
                 <h3>
+                  <strong>{selectedMatch.teams.home.name}</strong>
                   <img
                     src={selectedMatch.teams.home.logo}
                     alt={`${selectedMatch.teams.home.name} logo`}
                     style={{ width: "30px", marginRight: "10px" }}
                   />
-                  {selectedMatch.teams.home.name} vs{" "}
+                  {selectedMatch.goals.home} - {selectedMatch.goals.away}
                   <img
                     src={selectedMatch.teams.away.logo}
                     alt={`${selectedMatch.teams.away.name} logo`}
                     style={{ width: "30px", marginLeft: "10px" }}
                   />
-                  {selectedMatch.teams.away.name}
+                  <strong>{selectedMatch.teams.away.name}</strong>
                 </h3>
                 <p>
-                  <strong>Score:</strong>{" "}
-                  {selectedMatch.goals.home} - {selectedMatch.goals.away}
+                  <strong>
+                    Minute:{" "}
+                    <b style={{ color: "red" }}>
+                      {selectedMatch.fixture.status.elapsed}`
+                    </b>
+                  </strong>
                 </p>
                 <p>
-                  <strong>Minute:</strong> {selectedMatch.fixture.status.elapsed} minutes
-                </p>
-                <p>
-                  <strong>Stadium:</strong> {selectedMatch.fixture.venue.name},{" "}
+                  <b>Stadium:</b> {selectedMatch.fixture.venue.name},{" "}
                   {selectedMatch.fixture.venue.city}
                 </p>
                 <p>
-                  <strong>Referee:</strong>{" "}
+                  <b>Referee:</b>{" "}
                   {selectedMatch.fixture.referee || "Not Available"}
                 </p>
                 <h3>Events</h3>
-                <ul>
-                  {selectedMatch.events && selectedMatch.events.length > 0 ? (
-                    selectedMatch.events.map((event, index) => (
-                      <li key={index}>
-                        <strong>{event.time.elapsed}'</strong> -{" "}
-                        <strong>{event.type}</strong>: {event.detail} by{" "}
-                        {event.player?.name || "Unknown"} (
-                        {event.team?.name || "Unknown team"})
-                      </li>
-                    ))
-                  ) : (
-                    <p>No events available</p>
-                  )}
-                </ul>
+                <div className={styles.matchEvents}>
+                  <ul className={styles.eventsUl}>
+                    <h4>{selectedMatch.teams.home.name}</h4>
+                    {selectedMatch.events && selectedMatch.events.length > 0 ? (
+                      selectedMatch.events
+                        .filter(
+                          (event) =>
+                            event.team?.id === selectedMatch.teams.home.id
+                        )
+                        .map((event, index) => (
+                          <li key={`home-${index}`}>
+                            <strong>{event.time.elapsed}'</strong> -{" "}
+                            <strong>
+                              <u>{event.detail}</u>
+                            </strong>{" "}
+                            - {event.player?.name || "Unknown"}
+                          </li>
+                        ))
+                    ) : (
+                      <p>No events for home team</p>
+                    )}
+                  </ul>
+
+                  <ul className={styles.eventsUl}>
+                    <h4>{selectedMatch.teams.away.name}</h4>
+                    {selectedMatch.events && selectedMatch.events.length > 0 ? (
+                      selectedMatch.events
+                        .filter(
+                          (event) =>
+                            event.team?.id === selectedMatch.teams.away.id
+                        )
+                        .map((event, index) => (
+                          <li key={`away-${index}`}>
+                            <strong>{event.time.elapsed}'</strong> -{" "}
+                            <strong>
+                              <u>{event.detail}</u>
+                            </strong>{" "}
+                            - {event.player?.name || "Unknown"}
+                          </li>
+                        ))
+                    ) : (
+                      <p>No events for away team</p>
+                    )}
+                  </ul>
+                </div>
                 <h3>Statistics</h3>
                 {selectedMatch.stats && selectedMatch.stats.length > 0 ? (
                   <div className={styles.statsContainer}>
                     {selectedMatch.stats.map((teamStats, index) => (
-                      <div key={index}>
-                        <h4>{teamStats.team.name}</h4>
-                        <ul>
-                          {teamStats.statistics.map((stat, statIndex) => (
-                            <li key={statIndex}>
-                              <strong>{stat.type}</strong>: {stat.value}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <ul key={index} className={styles.stats}>
+                        {teamStats.statistics.map((stat, statIndex) => (
+                          <li key={statIndex}>
+                            <strong>{stat.type}</strong>: {stat.value}
+                          </li>
+                        ))}
+                      </ul>
                     ))}
                   </div>
                 ) : (
@@ -150,7 +183,8 @@ class Live extends Component {
                   onClick={() => this.setState({ selectedMatch: null })}
                   style={{ marginTop: "20px" }}
                 >
-                  Back to Live Matches
+                  <FontAwesomeIcon icon={faReplyAll} />
+                  Back to Matches
                 </button>
               </div>
             ) : (
@@ -168,12 +202,39 @@ class Live extends Component {
                         }}
                         onClick={() => this.handleMatchSelect(match.fixture.id)}
                       >
-                        <strong>{match.teams.home.name}</strong> vs{" "}
+                          <img
+                            src={match.league.logo}
+                            alt={`${match.league.name} logo`}
+                            style={{
+                              width: "35px",
+                              height: "35px",
+                            }}
+                          />
+                          <div className={styles.currentMatch}>
+                        <strong>{match.teams.home.name}</strong>
+                        <img
+                          src={match.teams.home.logo}
+                          alt={`${match.teams.home.name} logo`}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        {match.fixture.status.elapsed || 0}' <br></br>
+                        vs
+                        <img
+                          src={match.teams.away.logo}
+                          alt={`${match.teams.away.name} logo`}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginRight: "5px",
+                          }}
+                        />
                         <strong>{match.teams.away.name}</strong>
-                        <p style={{ marginLeft: "10px" }}>
-                          {match.league.name} - {match.fixture.status.elapsed || 0}{" "}
-                          minutes
-                        </p>
+                        </div>
+                          {match.league.name}
                       </li>
                     ))
                   ) : (
@@ -191,10 +252,7 @@ class Live extends Component {
         </div>
       </div>
     );
-}
-
-  
-  
+  }
 }
 
 export default Live;

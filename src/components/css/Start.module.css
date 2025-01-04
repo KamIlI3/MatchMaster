@@ -1,4 +1,18 @@
 body{
     overflow: hidden;
+    overflow-y: auto;
     margin: 0;
+}
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(81, 190, 218); 
+  border-radius: 15px; 
+  border: 0px solid transparent;
+}
+
+body::-webkit-scrollbar-track {
+  background-color: transparent; 
 }

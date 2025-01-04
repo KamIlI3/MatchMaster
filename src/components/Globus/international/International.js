@@ -183,12 +183,6 @@ class International extends Component {
     return (
       <div className={styles.globusContainer}>
         <div className={styles.contentWrapper}>
-        {this.state.showLoginPrompt && (
-            <div className={styles.loginPrompt}>
-              <p>You need to be logged in to add favorites.</p>
-              <button onClick={this.closeLoginPrompt}>Close</button>
-            </div>
-          )}
         <h2>
               {this.state.selectedTeamDetails
                 ? "Team Details"

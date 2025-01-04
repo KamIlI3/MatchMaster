@@ -1,38 +1,154 @@
 .liveMatches{
-    width:  75vw; 
+    width:  50vw; 
     background-color: rgba(0, 0, 0, 0.4); 
-    color: white;
-    padding: 10px;
-    overflow: hidden;
-    border-radius: 15px;
-    height: 70vh;
-    max-height: 70vh; 
-    position: absolute;
-    z-index: 1000;
-    overflow-y: auto;
+    color: aliceblue;
+    text-align: center;
+    font-family: poppins;
     top: 15%;
-    left: 12.5%;
+    left: 25%;
+    border-radius: 15px;
+    max-height: 70vh; 
+    min-height: 70vh;
+    position: absolute;
+    overflow: hidden;
+    overflow-y: auto;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    justify-content: start;
 }
 
 .liveMatches li{
-    border: 1px solid black;
-    height: 50px;
-    width: 170px;
-    margin-bottom: 5px;
-    border-radius: 15px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 5px;
-    background-color:  rgba(197, 196, 196, 0.2); 
+  border: 1px solid black;
+  height: 50px;
+  width: 100%;
+  margin-bottom: 5px;
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding-left: 5px;
+  background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(197, 196, 196, 0.25)); 
+  font-family: poppins;
   }
 
-  .liveMatches li:hover{
+
+.liveMatches::-webkit-scrollbar {
+      width: 6px;
+  }
+    
+.liveMatches::-webkit-scrollbar-thumb {
+      background-color: rgb(81, 190, 218); 
+      border-radius: 15px; 
+      border: 0px solid transparent;
+  }
+    
+.liveMatches::-webkit-scrollbar-track {
+      background-color: transparent; 
+  }
+
+.liveMatches li:hover{
     cursor: pointer;
     background-color:  rgba(197, 196, 196, 0.4);
   }
+
+  .liveMatches button{
+    border: solid 2px aliceblue;
+    color: aliceblue;
+    border-radius: 15px;
+    height: 40px;
+    width: 100px;
+    margin: 2%;
+    font-size: 0.7rem;
+    background-color: transparent;
+    align-self: center;
+  }
+  .liveMatches button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: solid 2px rgb(81, 190, 218);
+    cursor: pointer;
+  }
+
+  .matchEvents{
+    display: flex;
+}
+.matchEvents li{
+  width: 250px;
+}
+
+.eventsUl{
+  width: 50%;
+}
+
+
+.statsContainer{
+  display: flex;
+}
+.statsContainer li{
+  width: 250px;
+}
+
+.stats:nth-child(1) li{
+  background: linear-gradient(to left, rgba(197, 196, 196, 0.08), rgba(207, 207, 6, 0.35)); 
+}
+.stats:nth-child(2) li{
+  background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(207, 207, 6, 0.35)); 
+}
+
+.leagueName{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 30%;
+}
+
+.currentMatch{
+  display: flex;
+  width: 80%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+@media (max-width: 1280px) {
+
+
+.liveMatches li{
+  border: 1px solid black;
+  height: 50px;
+  width: 90%;
+  margin-bottom: 5px;
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding-left: 5px;
+  background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(197, 196, 196, 0.25)); 
+  font-family: poppins;
+  }
+  .matchesWrapperContent {
+    text-align: center;
+  }
+  .teamNameAndLogo {
+    align-items: center;
+  }
+  .matchStats {
+    align-items: center;
+    font-size: 70%;
+  }
+  .matchEvents {
+    justify-content: center;
+    font-size: 70%;
+  }
+
+  .liveMatches li{
+    font-size: 70%;
+  
+  }
+}

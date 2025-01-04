@@ -514,10 +514,6 @@ class Upcoming extends Component {
               </>
             )}
           </div>
-          <div
-            className={styles.globeWrapper}
-            ref={(ref) => (this.mount = ref)}
-          />
         </div>
       </div>
     );
