@@ -199,3 +199,21 @@
 .matchEvents li{
     width: 230px;
 }
+
+.matchStats{
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+.matchStats li{
+  width: 230px;
+}
+.stats{
+  display: flex;
+}
+.stats ul:nth-child(1) li{
+  background: linear-gradient(to left, rgba(197, 196, 196, 0.08), rgba(207, 207, 6, 0.35)); 
+}
+.stats ul:nth-child(2) li{
+  background: linear-gradient(to right, rgba(197, 196, 196, 0.08), rgba(207, 207, 6, 0.35)); 
+}
