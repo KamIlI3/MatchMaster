@@ -35,6 +35,7 @@
   h2{
     font-size: 200%;
     background: linear-gradient(to right, aliceblue, rgb(81, 190, 218));
+    background-clip: text;
     -webkit-background-clip: text; 
     -webkit-text-fill-color: transparent; 
   }
@@ -151,6 +152,7 @@ h3{
   display: inline;
   font-size: 150%;
   background: linear-gradient(to right, aliceblue, gold);
+  background-clip: text;
   -webkit-background-clip: text; 
   -webkit-text-fill-color: transparent;
   font-family: poppins;
